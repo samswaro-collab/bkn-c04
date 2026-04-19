@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honeywell Aerospace | BEAKON Sales Intelligence Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;color:#333;overflow-x:hidden;}
+.topbar{background:#1a1a2e;color:white;padding:12px 20px;display:flex;align-items:center;gap:20px;border-bottom:3px solid #e31837;position:sticky;top:0;z-index:100;}
+.logo-pill{background:white;color:#e31837;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:13px;}
+.topbar-title{flex:1;font-size:18px;font-weight:600;}
+.pill{background:rgba(255,255,255,0.15);padding:5px 10px;border-radius:15px;font-size:12px;}
+.pill-status{background:#4caf50;padding:5px 10px;border-radius:15px;font-size:12px;}
+.refresh-banner{background:#e31837;color:white;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;position:sticky;top:50px;z-index:99;}
+.container{display:flex;min-height:calc(100vh - 80px);}
+.sidebar{width:240px;background:#1a1a2e;color:white;padding:20px 0;overflow-y:auto;height:calc(100vh - 80px);position:sticky;top:80px;}
+.sidebar-label{font-size:11px;font-weight:700;text-transform:uppercase;color:#999;padding:0 15px;margin-bottom:8px;letter-spacing:0.5px;}
+.sidebar-section{margin-bottom:22px;}
+.sidebar-item{padding:10px 15px;cursor:pointer;font-size:13px;transition:all 0.2s;border-left:3px solid transparent;}
+.sidebar-item:hover{background:rgba(227,24,55,0.2);}
+.sidebar-item.active{background:rgba(227,24,55,0.3);border-left-color:#e31837;font-weight:600;}
+.sidebar-meta{font-size:10px;color:#aaa;padding:2px 15px 8px 15px;line-height:1.4;}
+.main-content{flex:1;padding:30px;overflow-y:auto;height:calc(100vh - 80px);}
+.section{display:none;}
+.section.active{display:block;}
+.section-title{font-size:24px;font-weight:700;margin-bottom:25px;color:#1a1a2e;}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:25px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:25px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:25px;}
+.card{background:white;border-radius:8px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1);border-top:3px solid #e31837;}
+.card-title{font-size:13px;font-weight:700;text-transform:uppercase;color:#666;margin-bottom:15px;letter-spacing:0.5px;}
+.kpi{font-size:32px;font-weight:700;color:#1a1a2e;margin-bottom:5px;}
+.kpi-label{font-size:12px;color:#999;}
+.kpi-change{font-size:12px;color:#4caf50;margin-top:5px;}
+.kpi-change-neg{font-size:12px;color:#f44336;margin-top:5px;}
+.tag{display:inline-block;background:#f0f0f0;color:#333;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-right:6px;margin-bottom:6px;}
+.tag-accent{background:rgba(227,24,55,0.1);color:#c41230;}
+.tag-hot{background:#fdecea;color:#c62828;}
+.tag-india{background:#fef3c7;color:#92400e;}
+.tag-def{background:#e8f5e9;color:#1b5e20;}
+.contact-card{background:white;border-radius:6px;padding:15px;border-left:3px solid #e31837;margin-bottom:12px;font-size:12px;}
+.contact-name{font-weight:600;color:#1a1a2e;margin-bottom:2px;}
+.contact-title{color:#666;font-size:11px;margin-bottom:5px;}
+.contact-location{color:#999;font-size:10px;}
+.prog-row{margin-bottom:15px;}
+.prog-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:#666;margin-bottom:5px;}
+.prog-bar{width:100%;height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:#e31837;border-radius:4px;}
+.loc-us{background:#dbeafe;color:#1e40af;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.loc-india{background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;}
+.chain{display:flex;align-items:stretch;gap:0;margin-bottom:14px;border-radius:10px;overflow:hidden;}
+.chain-num{color:#fff;width:38px;min-width:38px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;}
+.chain-body{flex:1;display:flex;flex-wrap:wrap;}
+.chain-cell{flex:1;min-width:200px;padding:12px 15px;border-right:1px solid #e4eaf5;}
+.chain-cell:last-child{border-right:none;}
+.chain-label{font-size:10px;font-weight:700;text-transform:uppercase;margin-bottom:5px;}
+.chain-head{font-size:12.5px;font-weight:700;color:#1a1a2e;}
+.chain-body-text{font-size:11.5px;color:#5a6a8a;margin-top:4px;line-height:1.6;}
+.bu-block{background:white;border-radius:10px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.08);margin-bottom:20px;}
+.bu-header{padding:14px 18px;display:flex;align-items:center;gap:10px;}
+.bu-header-title{font-size:15px;font-weight:700;color:white;}
+.bu-header-sub{font-size:11px;color:rgba(255,255,255,0.85);}
+.bu-action{padding:14px 18px;border-bottom:1px solid #f0f0f0;}
+.bu-action:last-child{border-bottom:none;}
+.bu-action-num{display:inline-block;background:#e31837;color:white;border-radius:50%;width:20px;height:20px;text-align:center;line-height:20px;font-size:11px;font-weight:700;margin-right:8px;}
+.bu-action-title{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:6px;}
+.bu-action-body{font-size:12px;color:#444;line-height:1.65;margin-bottom:8px;}
+.fast-sell{background:#fef2f2;border-left:3px solid #e31837;padding:7px 10px;border-radius:0 6px 6px 0;font-size:11px;color:#1a1a2e;font-weight:600;}
+.india-banner{background:linear-gradient(135deg,#ff9800,#f44336);color:white;border-radius:10px;padding:15px 18px;margin-bottom:20px;}
+.vg-block{background:linear-gradient(135deg,#7b1fa2,#9c27b0);border-radius:10px;padding:13px 16px;margin-bottom:16px;color:#fff;}
+.prog-badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-right:6px;margin-bottom:6px;}
+::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-track{background:#f1f1f1;}::-webkit-scrollbar-thumb{background:#e31837;border-radius:4px;}
+@media(max-width:1200px){.grid-4{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){.grid-3{grid-template-columns:repeat(2,1fr);}.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     HONEYWELL AEROSPACE — DYNAMIC DATA STORE
+     Refresh cycle: every 5 days
+     Sources: HON Q4 2025 earnings (Jan 2026), Honeywell press releases,
+              LinkedIn hiring data, FAA TCDS, usaspending.gov DoD contracts
+     Run: data_refresh_honeywell.py to update all values below.
+     Spinoff ticker: HONA (NASDAQ) · Expected Q3 2026
+══════════════════════════════════════════════════════════════════════ -->
+<script>
+const HW_DATA = {
+
+  // ── Meta ─────────────────────────────────────────────────────────────
+  lastRefreshed: "Apr 19, 2026",
+  dataSource:    "Honeywell Q4 FY2025 Earnings Release (Jan 2026) + HON 10-K FY2025 + LinkedIn",
+  ticker:        "HON (NASDAQ) → spin-off ticker: HONA (NASDAQ) expected Q3 2026",
+  hq:            "Phoenix, AZ",
+
+  // ── Group Financials (Aerospace Technologies segment) ────────────────
+  revenue:       17.5,   // $B USD FY2025 (includes CAES + Civitanavi acquisitions)
+  revenueGrowth: 13,     // % YoY
+  backlog:       37.5,   // $B USD record as of Dec 31, 2025
+  backlogGrowth: 11,     // % YoY (orders up 23% organically in Q4)
+  ebitMargin:    26.5,   // % adjusted segment margin Q4 2025
+  fcf:           5100,   // $M free cash flow (Honeywell total FY2025; AT is largest contributor)
+  headcount:     38000,  // approx global aerospace headcount
+  openRoles:     950,    // approx active LinkedIn + Honeywell careers postings Apr 2026
+
+  // ── Spinoff ──────────────────────────────────────────────────────────
+  spinoff: {
+    status:      "Form 10 filed · On track Q3 2026",
+    newTicker:   "HONA",
+    exchange:    "NASDAQ",
+    hq:          "Phoenix, AZ",
+    size:        "$17.5B revenue · one of largest pure-play aerospace suppliers globally"
+  },
+
+  // ── Leadership (verified from Honeywell press releases Jan 2026) ──────
+  leadership: {
+    ceo:  { name: "Jim Currier",   title: "President & CEO, Honeywell Aerospace Technologies",         since: "Nov 2025", location: "Phoenix, AZ" },
+    cfo:  { name: "Josh Jepsen",   title: "CFO, Honeywell Aerospace Technologies",                     since: "Feb 2026", location: "Phoenix, AZ", note: "Former CFO, Deere & Company" },
+    cto:  { name: "Todd Giles",    title: "Chief Technology Officer, Honeywell Aerospace Technologies", since: "2024",     location: "Phoenix, AZ" }
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // OFFICIAL 3 P&L SEGMENTS (investor/SEC reporting structure)
+  // Source: Honeywell Form 10 SEC filing Mar 2026 + Oct 2025 press release
+  // Revenue figures: FY 2025 net sales per Form 10 disclosure
+  // ══════════════════════════════════════════════════════════════════════
+  segments: {
+    es: {
+      name:      "Electronic Solutions",
+      short:     "ES",
+      revenue:   6.8,   // $B FY2025 net sales — Form 10
+      president: "Bob Buddecke",
+      presTitle: "President & CEO, Electronic Solutions (post-spinoff title)",
+      presYears: "27 years at Honeywell",
+      color:     "#e31837",
+      description: "Integrated avionics, navigation & sensors, electromagnetic defense, high-performance space solutions",
+      // Internal sub-units that roll up to ES in the investor P&L:
+      internalUnits: ["Electronic Solutions (avionics)", "Space and Defense", "Connected Aerospace"],
+      cyientAngle: "DO-178C Level A Anthem cert sprint + Forge analytics + GPS-denied nav simulation",
+      openRoles:   340
+    },
+    eps: {
+      name:      "Engines & Power Systems",
+      short:     "E&PS",
+      revenue:   5.4,   // $B FY2025 net sales — Form 10
+      president: "Dave Marinick",
+      presTitle: "President & CEO, Engines & Power Systems (post-spinoff title)",
+      presYears: "37+ years at Honeywell",
+      color:     "#c41230",
+      description: "Propulsion systems, auxiliary power units (APUs), electric power solutions — 72,000+ engines and 100,000+ APUs delivered over 60 years",
+      internalUnits: ["Engines & Power Systems"],
+      cyientAngle: "CMM/IPC tech pubs for TFE731 Block E + 131-9B APU overhaul cycle — S1000D authoring from Hyderabad",
+      openRoles:   210
+    },
+    cs: {
+      name:      "Control Systems",
+      short:     "CS",
+      revenue:   5.2,   // $B FY2025 net sales — Form 10
+      president: "Rich DeGraff",
+      presTitle: "President & CEO, Control Systems (post-spinoff title)",
+      presYears: "17+ years at Honeywell",
+      color:     "#1a1a2e",
+      description: "Mission-critical thermal & motion control: air & thermal systems, actuation, wheels & brakes, lighting, fly-by-wire, life support & safety",
+      internalUnits: ["Mechanical Systems"],
+      cyientAngle: "DO-178C FCS cert docs for Compact Fly-by-Wire on eVTOL (VX4) + FLRAA — DO-254 HW cert support",
+      openRoles:   180
+    }
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // INTERNAL 8 OPERATIONAL UNITS (slide AOP structure)
+  // Maps to the 3 P&L segments above + cross-cutting functions.
+  // "parentSegment" = which P&L segment this rolls up to.
+  // "Seating" sub-units = not yet assigned in AOP (per slide).
+  // ══════════════════════════════════════════════════════════════════════
+  internalUnits: {
+    electronicSolutions: {
+      name:          "Electronic Solutions (Avionics)",
+      parentSegment: "es",
+      headerColor:   "#1565c0",   // blue = established in slide
+      lead:          "Bob Buddecke",
+      subunits:      ["Cockpit Systems (Anthem)", "Space", "Navigation & Sensors", "Flight Controls", "SATCOM"],
+      keyProducts:   ["Anthem avionics", "Primus Epic/Elite", "IntuVue radar", "TCAS 3000", "Laseref VI INS", "SmartPath GBAS", "Aspire SATCOM"],
+      cyientFocus:   "DO-178C Level A avionics SW cert — Anthem V&V team from Hyderabad"
+    },
+    spaceDefense: {
+      name:          "Space and Defense",
+      parentSegment: "es",
+      headerColor:   "#e65100",   // gold = per slide
+      lead:          "TBC (under ES / Bob Buddecke)",
+      subunits:      ["TBD — sub-units not assigned in AOP (Seating)"],
+      keyProducts:   ["MAPS GPS-denied navigation", "GEONS orbital nav", "Laseref VI inertial", "Space payloads", "Electromagnetic defense"],
+      cyientFocus:   "MBSE/SysML + DO-254 FPGA verification for MAPS program — Albuquerque NM"
+    },
+    connectedAerospace: {
+      name:          "Connected Aerospace",
+      parentSegment: "es",
+      headerColor:   "#e65100",
+      lead:          "Jason Wissink — President, Services & Connectivity",
+      subunits:      ["TBD — sub-units not assigned in AOP (Seating)"],
+      keyProducts:   ["Honeywell Forge (7,800+ aircraft)", "Predictive maintenance analytics", "Fleet health monitoring", "Connected aircraft APIs"],
+      cyientFocus:   "Forge analytics SI — predictive maintenance modules from Hyderabad (6-week PoV)"
+    },
+    enginesPS: {
+      name:          "Engines & Power Systems",
+      parentSegment: "eps",
+      headerColor:   "#e65100",
+      lead:          "Dave Marinick",
+      subunits:      ["Engines", "Power Systems (APUs)", "Engine Controls", "Global Production Engineering"],
+      keyProducts:   ["HTF7000 (business jets)", "TFE731 (Falcon/Learjet)", "TPE331 (turboprop)", "131-9B APU (787)", "RE220 APU (A350/A330neo)", "36-150 APU (FLRAA)", "PTMS (F-35)"],
+      cyientFocus:   "CMM/IPC authoring: TFE731 Block E + 131-9B APU overhaul documentation — S1000D XML, Hyderabad"
+    },
+    mechanicalSystems: {
+      name:          "Mechanical Systems",
+      parentSegment: "cs",
+      headerColor:   "#e65100",
+      lead:          "Rich DeGraff",
+      subunits:      ["Mechanical Components", "Air & Thermal Systems", "Wheel & Braking Systems"],
+      keyProducts:   ["Compact Fly-by-Wire (VX4 eVTOL, FLRAA)", "ECS (commercial/military)", "Wheel & brake systems (widebody/narrowbody)", "Inceptors", "Actuators"],
+      cyientFocus:   "FbW DO-178C FCS cert docs + DO-254 HW cert for VX4 eVTOL + FLRAA"
+    },
+    customerProductSupport: {
+      name:          "Customer & Product Support",
+      parentSegment: "cross",
+      headerColor:   "#1565c0",   // blue = established in slide
+      lead:          "Toby Price — VP, Customer Experience",
+      subunits:      ["Global Tech Ops"],
+      keyProducts:   ["MRO support", "Tech ops", "Customer engineering"],
+      cyientFocus:   "MRO process engineering support — Global Tech Ops engineering documentation"
+    },
+    engineeringTechnology: {
+      name:          "Engineering Technology",
+      parentSegment: "cross",
+      headerColor:   "#e65100",
+      lead:          "Todd Giles — Chief Technology Officer",
+      subunits:      ["Advanced Technology", "Engineering", "Engineering Ops", "Engineering Test Services"],
+      keyProducts:   ["R&D programs", "Advanced materials", "Electrification", "Cert test services"],
+      cyientFocus:   "Engineering test services support — cert documentation and simulation from Hyderabad"
+    },
+    aftermarket: {
+      name:          "Aftermarket",
+      parentSegment: "cross",
+      headerColor:   "#e65100",
+      lead:          "Heath Patrick — President, Americas Aftermarket",
+      subunits:      ["TBD — sub-units not assigned in AOP (Seating)"],
+      keyProducts:   ["MRO contracts", "Tech pubs", "Spare parts", "Overhaul services"],
+      cyientFocus:   "Tech pubs cost-out: IETMs, S1000D AMM/IPC authoring — direct ROI case for Heath Patrick P&L"
+    }
+  },
+
+  // ── Functional Leaders (cross-BU — confirmed from public announcements) ─
+  functionalLeaders: [
+    { name: "Heath Patrick",  title: "President, Americas Aftermarket",    unit: "Aftermarket",              location: "Phoenix, AZ" },
+    { name: "Jason Wissink",  title: "President, Services & Connectivity", unit: "Connected Aerospace",      location: "Phoenix, AZ" },
+    { name: "Toby Price",     title: "VP, Customer Experience",            unit: "Customer & Product Support",location: "Phoenix, AZ" }
+  ],
+
+  // ── Key Sites ─────────────────────────────────────────────────────────
+  sites: {
+    phoenix:     { label: "Phoenix AZ",      role: "Aerospace HQ · Avionics · Connected Aircraft",   bu: "ES / Corporate",  roles: 7200 },
+    albuquerque: { label: "Albuquerque NM",  role: "Defense · GPS-denied nav · Space",               bu: "ES / Defense",    roles: 3100 },
+    clearwater:  { label: "Clearwater FL",   role: "Military avionics · EW",                         bu: "ES",              roles: 1900 },
+    urbana:      { label: "Urbana OH",       role: "APU mfg · Turbine engines",                      bu: "E&PS",            roles: 1200 },
+    bangalore:   { label: "Bangalore IN",    role: "HTS — avionics SW · Forge analytics",            bu: "ES / HTS",        roles: 3500 },
+    hyderabad:   { label: "Hyderabad IN",    role: "HCE — Connected Enterprise · IT/analytics only", bu: "Services",        roles: 800,  gap: true }
+  },
+
+  // ── Revenue split — Form 10 FY2025 confirmed figures ─────────────────
+  // ES $6.8B, E&PS $5.4B, CS $5.2B = $17.4B total (per SEC Form 10 Mar 2026)
+  buSplit: {
+    labels: ["Electronic Solutions ($6.8B)", "Engines & Power Systems ($5.4B)", "Control Systems ($5.2B)"],
+    pcts:   [39, 31, 30],
+    colors: ["#e31837", "#c41230", "#1a1a2e"]
+  },
+
+  // ── Opportunity Scores for Cyient ─────────────────────────────────────
+  opportunities: [
+    { label: "Anthem DO-178C Level A Avionics SW",   score: 93 },
+    { label: "TFE731/APU CMM/IPC Tech Publications", score: 88 },
+    { label: "Forge Analytics / Predictive Maint.",  score: 78 },
+    { label: "FbW Cert Docs — eVTOL / FLRAA",        score: 72 },
+    { label: "Defense MBSE/SysML (GPS-denied nav)",  score: 62 },
+    { label: "Spinoff PLM/ERP Transition ER&D",      score: 58 },
+    { label: "India BIETC Hyderabad Expansion",      score: 87 }
+  ]
+};
+</script>
+
+<!-- TOPBAR (dynamic) -->
+<div class="topbar">
+  <div class="logo-pill">✈ BEAKON</div>
+  <div class="topbar-title" id="tb-title">Honeywell Aerospace — Sales Intelligence Dashboard</div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <div class="pill" id="tb-backlog">—</div>
+    <div class="pill" id="tb-hc">—</div>
+    <div class="pill" id="tb-ticker">—</div>
+    <div class="pill-status">● Live</div>
+  </div>
+</div>
+
+<!-- REFRESH BANNER (dynamic) -->
+<div class="refresh-banner">
+  <span id="banner-text">Loading…</span>
+  <span style="font-size:11px;opacity:.8;" id="banner-date">—</span>
+</div>
+
+<div class="container">
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Honeywell Aerospace</div>
+    <div class="sidebar-meta" id="sb-meta">Phoenix AZ · Spinoff Q3 2026<br>HONA · $17.5B revenue</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Sales</div>
+    <div class="sidebar-item active" onclick="switchSection(event,'overview')">📊 Summary KPIs</div>
+    <div class="sidebar-item" onclick="switchSection(event,'org')">🏢 Org Structure & BUs</div>
+    <div class="sidebar-item" onclick="switchSection(event,'contacts')">👥 Key Contacts</div>
+    <div class="sidebar-item" onclick="switchSection(event,'actions')">🎯 Sales Actions</div>
+    <div class="sidebar-item" onclick="switchSection(event,'skills')">⚡ Fast-Sell Skills</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Intelligence</div>
+    <div class="sidebar-item" onclick="switchSection(event,'hiring')">💼 Hiring Intelligence</div>
+    <div class="sidebar-item" onclick="switchSection(event,'signals')">📡 Signal Chains</div>
+    <div class="sidebar-item" onclick="switchSection(event,'competitive')">⚔️ Competitive Intel</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Programs & Strategy</div>
+    <div class="sidebar-item" onclick="switchSection(event,'programs')">✈️ Platform Programs</div>
+    <div class="sidebar-item" onclick="switchSection(event,'india')">🇮🇳 India Strategy</div>
+    <div class="sidebar-item" onclick="switchSection(event,'spinoff')">🔄 Spinoff Transition</div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Reference</div>
+    <div class="sidebar-item" onclick="switchSection(event,'reference')">📚 Market Context</div>
+  </div>
+  <div style="padding:15px;font-size:10px;color:#666;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px;">
+    Last refreshed: <span id="sb-refresh">—</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+<!-- ═══ OVERVIEW ═══ -->
+<div id="overview" class="section active">
+  <div class="section-title">📊 Honeywell Aerospace — Summary KPIs</div>
+
+  <div style="background:linear-gradient(135deg,#1a1a2e,#e31837);color:white;border-radius:10px;padding:15px 20px;margin-bottom:22px;">
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px;" id="strat-headline">🚀 Strategic Context</div>
+    <div style="font-size:12px;opacity:.93;line-height:1.7;" id="strat-body">Loading…</div>
+  </div>
+
+  <div class="grid-4">
+    <div class="card"><div class="card-title">Aerospace Revenue</div><div class="kpi" id="kpi-rev">—</div><div class="kpi-label">FY2025 Segment</div><div class="kpi-change" id="kpi-rev-g">—</div></div>
+    <div class="card"><div class="card-title">Record Backlog</div><div class="kpi" id="kpi-bl">—</div><div class="kpi-label">As of Dec 31, 2025</div><div class="kpi-change" id="kpi-bl-g">—</div></div>
+    <div class="card"><div class="card-title">Adj. Segment Margin</div><div class="kpi" id="kpi-margin">—</div><div class="kpi-label">Q4 2025 adjusted</div><div class="kpi-change">↑ +620 bps YoY (Q4)</div></div>
+    <div class="card"><div class="card-title">Open Roles</div><div class="kpi" id="kpi-roles">—</div><div class="kpi-label">Active postings Apr 2026</div><div class="kpi-change">↑ Hiring accelerating</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">BU Revenue Split (Estimated)</div>
+      <canvas id="buChart" height="210"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Cyient Opportunity Score by Vector</div>
+      <div id="opp-bars"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:25px;">
+    <div class="card-title">Global Footprint</div>
+    <div id="sites-grid" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:5px;"></div>
+  </div>
+</div>
+
+<!-- ═══ ORG STRUCTURE ═══ -->
+<div id="org" class="section">
+  <div class="section-title">🏢 Org Structure & Business Units</div>
+
+  <div style="background:#fff8e1;border-left:4px solid #ff9800;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px;color:#7f3400;line-height:1.7;">
+    <strong>Source:</strong> Honeywell press releases Oct 2025 (segment restructure) and Jan 2026 (BU leadership appointments). All names and titles are sourced from official Honeywell announcements. Post-spinoff (HONA), BU presidents report directly to CEO Jim Currier. Titles take effect upon spinoff completion (Q3 2026).
+  </div>
+
+  <!-- CEO/CFO/CTO row -->
+  <div class="grid-3" id="exec-cards"></div>
+
+  <!-- 3 BU Cards -->
+  <div id="bu-cards"></div>
+
+  <!-- Functional leaders -->
+  <div class="card" style="margin-bottom:25px;">
+    <div class="card-title">Functional & Operational Leaders</div>
+    <div id="func-leaders" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:5px;"></div>
+  </div>
+
+  <!-- Org chart visual -->
+  <div class="card">
+    <div class="card-title">Reporting Structure (Post-Spinoff)</div>
+    <div style="font-size:12px;line-height:2;color:#444;padding:10px 0;">
+      <div style="text-align:center;background:#e31837;color:white;padding:10px;border-radius:8px;font-weight:700;max-width:340px;margin:0 auto 10px auto;" id="org-ceo-box">—</div>
+      <div style="text-align:center;color:#999;font-size:11px;margin-bottom:8px;">Reports to CEO</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;" id="org-bu-boxes"></div>
+      <div style="text-align:center;color:#999;font-size:11px;margin-top:12px;margin-bottom:6px;">Also reporting to CEO</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;" id="org-func-boxes"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SIGNALS ═══ -->
+<div id="signals" class="section">
+  <div class="section-title">📡 Signal Chains — Active Buying Events</div>
+
+  <div style="background:#fef2f2;border-left:4px solid #e31837;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px;color:#7f1d1d;line-height:1.7;">
+    <strong>How to use:</strong> Each chain = a live market signal → Honeywell's response → specific ER&D gap created → Cyient entry. Lead with the signal in outreach — it proves you track their budget cycle, not cold-calling.
+  </div>
+
+  <!-- Chain 1: Electronic Solutions -->
+  <div class="chain" style="background:#fafafa;border:1px solid #e0e0e0;">
+    <div class="chain-num" style="background:#e31837;">1</div>
+    <div class="chain-body">
+      <div class="chain-cell" style="background:#fff8f8;">
+        <div class="chain-label" style="color:#e31837;">📡 ES — LIVE SIGNAL</div>
+        <div class="chain-head">Anthem Avionics: 200+ SW Engineer Hiring Wave · Phoenix AZ</div>
+        <div class="chain-body-text">Electronic Solutions is in a certification sprint for the Anthem next-gen avionics platform — replacing Primus Epic on business jets, regional jets, and eVTOL. Honeywell posted 200+ avionics SW engineering roles (DO-178C Level A, embedded C/C++, ARINC 429/664). First OEM customer: Embraer E-Jet NXT. Additional OEM programs in pipeline.</div>
+      </div>
+      <div class="chain-cell">
+        <div class="chain-label" style="color:#555;">🔧 HOW HONEYWELL IS RESPONDING</div>
+        <div class="chain-head">Scaling Anthem to 3 OEM partnerships simultaneously</div>
+        <div class="chain-body-text">Anthem is architected for multi-OEM adoption. Honeywell is resourcing concurrent certification programs. Bob Buddecke's Electronic Solutions BU is the budget owner. Engineering bandwidth is the binding constraint — internal hiring alone cannot cover the cert sprint timeline.</div>
+      </div>
+      <div class="chain-cell" style="background:#f0fff4;">
+        <div class="chain-label" style="color:#1b5e20;">⚡ CYIENT ENTRY</div>
+        <div class="chain-head">DO-178C DAL-A Avionics SW — Hyderabad + Phoenix Embedded</div>
+        <div class="chain-body-text">Cyient BIETC has DAL-A certified teams. Proposal: Anthem V&V SW engineering from Hyderabad, Phoenix-embedded systems architect. 25–40 FTE over 18 months. ~$8M savings vs. Phoenix-only hiring. Compress cert timeline risk.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chain 2: E&PS -->
+  <div class="chain" style="background:#fafafa;border:1px solid #e0e0e0;margin-top:2px;">
+    <div class="chain-num" style="background:#c41230;">2</div>
+    <div class="chain-body">
+      <div class="chain-cell" style="background:#fff5f5;">
+        <div class="chain-label" style="color:#c41230;">📡 E&PS — LIVE SIGNAL</div>
+        <div class="chain-head">Boeing 787 APU (131-9B) Sustainment — MRO Demand Rising</div>
+        <div class="chain-body-text">Honeywell is sole-source on the 131-9B APU for all 787 variants. With 787 delivery ramp (Boeing targeting 10+/month) and in-service fleet exceeding 1,000 aircraft, initial overhaul intervals are hitting. Dave Marinick's E&PS BU is adding Urbana OH engineering roles for AMM revision, depot process engineering, and CMM authoring.</div>
+      </div>
+      <div class="chain-cell">
+        <div class="chain-label" style="color:#555;">🔧 HOW HONEYWELL IS RESPONDING</div>
+        <div class="chain-head">Expanding APU engineering in Urbana OH; technical pubs behind schedule</div>
+        <div class="chain-body-text">AMM overhaul procedures for the 131-9B require S1000D/ATA2200 proficiency. Honeywell does not have spare capacity for full AMM update cycle internally. TFE731 Block E (4,000+ active units) and HTF7000 overhaul manuals face same constraint.</div>
+      </div>
+      <div class="chain-cell" style="background:#f0fff4;">
+        <div class="chain-label" style="color:#1b5e20;">⚡ CYIENT ENTRY</div>
+        <div class="chain-head">APU/Engine CMM & IPC Authoring — S1000D — Hyderabad</div>
+        <div class="chain-body-text">Cyient S1000D/ATA2200 authoring (Boeing, GE, Airbus credentials). Propose: 131-9B + TFE731 Block E documentation workstream from Hyderabad. 15–25 FTE, AS9100 certified. Separate entry from ES — different VP sponsor (Dave Marinick vs. Bob Buddecke). Land-and-expand model.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chain 3: Control Systems eVTOL -->
+  <div class="chain" style="background:#fafafa;border:1px solid #e0e0e0;margin-top:2px;">
+    <div class="chain-num" style="background:#1a1a2e;">3</div>
+    <div class="chain-body">
+      <div class="chain-cell" style="background:#f8faff;">
+        <div class="chain-label" style="color:#1a1a2e;">📡 CS — LIVE SIGNAL</div>
+        <div class="chain-head">eVTOL Fly-by-Wire: Vertical Aerospace VX4 + FLRAA Bell 360</div>
+        <div class="chain-body-text">Rich DeGraff's Control Systems designed the lightest/most compact inceptor in the industry for Vertical Aerospace VX4. Honeywell Compact Fly-by-Wire also selected for Bell FLRAA (Future Long-Range Assault Aircraft). Both programs are in active cert sprint — FAA Special Conditions for eVTOL + MIL-SPEC for FLRAA. DO-178C FCS cert documentation is the binding resource.</div>
+      </div>
+      <div class="chain-cell">
+        <div class="chain-label" style="color:#555;">🔧 HOW HONEYWELL IS RESPONDING</div>
+        <div class="chain-head">Scaling fly-by-wire cert team; first-mover position in eVTOL controls market</div>
+        <div class="chain-body-text">CS is building eVTOL cert methodology from scratch — no existing vendor ecosystem for FbW on novel eVTOL architectures. FLRAA and eVTOL run concurrently, creating extreme cert engineering bandwidth pressure. Rich DeGraff confirmed publicly: "proven compact fly-by-wire system will exceed expectations on FLRAA."</div>
+      </div>
+      <div class="chain-cell" style="background:#f0fff4;">
+        <div class="chain-label" style="color:#1b5e20;">⚡ CYIENT ENTRY</div>
+        <div class="chain-head">FbW Cert Documentation Partner — DO-178C FCS + DO-254 HW</div>
+        <div class="chain-body-text">Cyient is building eVTOL cert documentation for Eve (Embraer) — same DO-178C FCS framework Honeywell CS needs. Cross-sell: become Honeywell's preferred FbW cert docs partner for VX4 + FLRAA. Joint cert framework workshop with Rich DeGraff's team. One Hyderabad team serving both Eve and Honeywell FbW programs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chain 4: Services/Connectivity (Forge) -->
+  <div class="chain" style="background:#fafafa;border:1px solid #e0e0e0;margin-top:2px;">
+    <div class="chain-num" style="background:#2e7d32;">4</div>
+    <div class="chain-body">
+      <div class="chain-cell" style="background:#f8fff8;">
+        <div class="chain-label" style="color:#2e7d32;">📡 SERVICES — LIVE SIGNAL</div>
+        <div class="chain-head">Forge Connected Aircraft — 7,800+ Aircraft, Analytics Backlog</div>
+        <div class="chain-body-text">Jason Wissink's Services & Connectivity organization runs Honeywell Forge — the cloud IoT platform with 7,800+ aircraft on-platform (up 18% YoY). Airlines are requesting custom predictive maintenance dashboards, prognostic APIs, and fleet health analytics faster than the Forge engineering team can deliver. Phoenix and Bangalore HTS both capacity-constrained.</div>
+      </div>
+      <div class="chain-cell">
+        <div class="chain-label" style="color:#555;">🔧 HOW HONEYWELL IS RESPONDING</div>
+        <div class="chain-head">Hiring cloud/ML engineers; seeking Forge analytics SI partners</div>
+        <div class="chain-body-text">Forge is built on AWS with Azure analytics layers. Bangalore HTS team does Forge analytics but faces overflow. Airline-specific customization (fleet health, fuel efficiency, dispatch reliability dashboards) is the growth area. Jason Wissink's team is actively seeking ER&D partners for Forge analytics modules.</div>
+      </div>
+      <div class="chain-cell" style="background:#f0fff4;">
+        <div class="chain-label" style="color:#1b5e20;">⚡ CYIENT ENTRY</div>
+        <div class="chain-head">Forge Analytics ER&D — Predictive Maintenance Modules</div>
+        <div class="chain-body-text">Cyient Digital / data analytics: propose a 6-week PoV building a predictive maintenance module for one airline Forge customer from Hyderabad. Co-develop with HTS Bangalore under a co-delivery model. Position as Forge SI partner. Entry sponsor: Jason Wissink (Services & Connectivity). Cross-sell to Bangalore HTS via Rajeev Gautam.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chain 5: Aftermarket -->
+  <div class="chain" style="background:#fafafa;border:1px solid #e0e0e0;margin-top:2px;">
+    <div class="chain-num" style="background:#e65100;">5</div>
+    <div class="chain-body">
+      <div class="chain-cell" style="background:#fff8f0;">
+        <div class="chain-label" style="color:#e65100;">📡 AFTERMARKET — LIVE SIGNAL</div>
+        <div class="chain-head">Americas Aftermarket Expansion — Tech Pubs & Cost Savings Drive</div>
+        <div class="chain-body-text">Heath Patrick's Americas Aftermarket business is under pressure to reduce MRO cost per event while handling growing volume from commercial aviation recovery. Technical publications (AMMs, CMMs, IPCs) revision backlog is a known constraint — the Aftermarket P&L directly bears the cost of outdated manuals causing MRO shop inefficiency and AOG events.</div>
+      </div>
+      <div class="chain-cell">
+        <div class="chain-label" style="color:#555;">🔧 HOW HONEYWELL IS RESPONDING</div>
+        <div class="chain-head">Aftermarket cost takeout program; outsourcing tech pubs workstreams</div>
+        <div class="chain-body-text">Heath Patrick has publicly discussed cost savings as a key Aftermarket priority. Technical publications are one of the highest-ROI outsourcing opportunities — a $2–3M investment in structured authoring reduces shop-turn times and customer concessions worth 5–10x. Aftermarket is a separate P&L from E&PS even though products overlap.</div>
+      </div>
+      <div class="chain-cell" style="background:#f0fff4;">
+        <div class="chain-label" style="color:#1b5e20;">⚡ CYIENT ENTRY</div>
+        <div class="chain-head">Aftermarket Tech Pubs Outsourcing — IPC / AMM / CMM Authoring</div>
+        <div class="chain-body-text">Separate sales motion from E&PS propulsion team. Target Heath Patrick directly with an Aftermarket-specific ROI case: "Every outdated AMM page costs your MRO network 0.4 shop-hours per event." Propose a structured tech pubs transformation from Hyderabad — S1000D XML, interactive electronic tech manuals (IETMs), 20–30 FTE.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chain 6: Spinoff Transition -->
+  <div class="chain" style="background:#fafafa;border:1px solid #e0e0e0;margin-top:2px;">
+    <div class="chain-num" style="background:#7b1fa2;">6</div>
+    <div class="chain-body">
+      <div class="chain-cell" style="background:#fdf8ff;">
+        <div class="chain-label" style="color:#7b1fa2;">📡 SPINOFF — LIVE SIGNAL</div>
+        <div class="chain-head">HONA Spinoff Q3 2026 — IT/OT Separation + New Vendor Ecosystem</div>
+        <div class="chain-body-text">Honeywell Aerospace Technologies is separating from Honeywell International (Form 10 filed, Q3 2026 target). This requires full IT/OT infrastructure separation — SAP ERP instance, PLM (Teamcenter/Windchill), MES for all sites, cybersecurity decoupling. HAT must also build a standalone approved vendor list. New MSA cycles will open for all ER&D categories.</div>
+      </div>
+      <div class="chain-cell">
+        <div class="chain-label" style="color:#555;">🔧 HOW HONEYWELL IS RESPONDING</div>
+        <div class="chain-head">Jim Currier building new HONA vendor ecosystem; PLM/ERP separation in progress</div>
+        <div class="chain-body-text">Jim Currier and Josh Jepsen (new CFO) are resetting vendor structures for the standalone company. HAT must stand up independent SAP, PLM, HR systems. Existing HON corporate MSAs may not transfer. This creates a formal re-qualification window for ER&D partners who were previously shut out under HON corporate vendor programs.</div>
+      </div>
+      <div class="chain-cell" style="background:#f0fff4;">
+        <div class="chain-label" style="color:#1b5e20;">⚡ CYIENT ENTRY</div>
+        <div class="chain-head">Get on HONA Approved Vendor List + PLM Migration ER&D</div>
+        <div class="chain-body-text">Act now before Day 1 of HONA independence. Two tracks: (1) engage Cyient legal/procurement to register as an approved HONA ER&D vendor before Q3 2026 cutover; (2) propose PLM data migration workstream to Jim Currier / Josh Jepsen — Cyient Digital Engineering understands Teamcenter/Windchill + aerospace engineering data, not just IT database migration.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ACTIONS ═══ -->
+<div id="actions" class="section">
+  <div class="section-title">🎯 BU-Level Sales Actions</div>
+
+  <!-- ES Actions -->
+  <div class="bu-block">
+    <div class="bu-header" style="background:linear-gradient(135deg,#e31837,#c41230);">
+      <div>
+        <div class="bu-header-title" id="action-es-hdr">🖥️ Electronic Solutions</div>
+        <div class="bu-header-sub" id="action-es-sub">Anthem · Navigation · SATCOM · Space · Phoenix AZ</div>
+      </div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">1</span>Request Anthem Architecture Briefing with Bob Buddecke's Team</div>
+      <div class="bu-action-body">Contact the Honeywell Electronic Solutions avionics engineering director in Phoenix for a technical briefing. Do NOT lead with staffing. Lead with: "We're supporting Embraer's avionics cert workflow using the same DO-178C standard Anthem requires — here's how we compressed cert cycle time by 22%." Prepare a 3-page capability brief specific to Anthem ARINC 664 / Level A SW architecture.</div>
+      <div class="fast-sell">⚡ "We already have a running DO-178C DAL-A workflow at an OEM using a platform with identical cert architecture. We can onboard to Anthem's toolchain in 6 weeks, not 6 months."</div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">2</span>Forge Analytics PoV — 6-Week Sprint Offer</div>
+      <div class="bu-action-body">Identify the Forge product owner under Jason Wissink (LinkedIn: "Honeywell Forge product manager" + Phoenix AZ). Offer a 6-week PoV: build a predictive maintenance analytics module for one airline customer's fleet subset using Honeywell's Forge data API. Cyient absorbs the PoV cost as investment. Get a live demo artifact — not a deck.</div>
+      <div class="fast-sell">⚡ "We built a fleet health dashboard for [comparable MRO customer] on similar sensor-data architecture. 6-week PoV — you get a production-ready Forge analytics module."</div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">3</span>Cross-Sell via Embraer Anthem Relationship</div>
+      <div class="bu-action-body">Embraer's E-Jet NXT uses Anthem. If Cyient has a relationship with Embraer's avionics team (BEAKON Embraer dashboard → Signal Chain 1), leverage it: "The Embraer team is using Anthem — we're already in their cert workflow. Introduction to Bob Buddecke's team?" Triangulated OEM reference is the strongest intro possible.</div>
+    </div>
+  </div>
+
+  <!-- E&PS Actions -->
+  <div class="bu-block">
+    <div class="bu-header" style="background:linear-gradient(135deg,#c41230,#8b0000);">
+      <div>
+        <div class="bu-header-title" id="action-eps-hdr">⚙️ Engines & Power Systems</div>
+        <div class="bu-header-sub" id="action-eps-sub">TFE731 · HTF7000 · 131-9B APU · Urbana OH</div>
+      </div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">1</span>CMM/IPC Authoring — TFE731 Block E + 131-9B Overhaul Cycle</div>
+      <div class="bu-action-body">Identify the Honeywell E&PS Technical Publications Manager via LinkedIn (search: "Honeywell propulsion technical publications Urbana" or "Honeywell APU documentation"). Offer a CMM authoring workstream using Cyient's S1000D XML toolchain. Show existing turbofan engine documentation credentials. This is a separate sales motion from ES — different VP (Dave Marinick), different budget, different KPIs.</div>
+      <div class="fast-sell">⚡ "We have an active CMM authoring engagement on a comparable turbofan — we can deliver TFE731 Block E overhaul documentation 30% faster than internal-only capacity."</div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">2</span>Aftermarket Tech Pubs ROI Case — Target Heath Patrick</div>
+      <div class="bu-action-body">Heath Patrick (Americas Aftermarket) owns the P&L that suffers from outdated tech pubs. Build a 2-page ROI case: "Every 1% reduction in shop-turn time driven by accurate AMM documentation = $X savings per event across your 5,200+ active TFE731/HTF7000 installed base." Aftermarket budget is separate from E&PS — two bites at the same apple.</div>
+    </div>
+  </div>
+
+  <!-- CS Actions -->
+  <div class="bu-block">
+    <div class="bu-header" style="background:linear-gradient(135deg,#1a1a2e,#2d3a5a);">
+      <div>
+        <div class="bu-header-title" id="action-cs-hdr">🛡️ Control Systems</div>
+        <div class="bu-header-sub" id="action-cs-sub">Fly-by-Wire · ECS · Wheels & Brakes · eVTOL · FLRAA</div>
+      </div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">1</span>eVTOL FbW Cert Docs — Propose Joint Workshop with Rich DeGraff's Team</div>
+      <div class="bu-action-body">Rich DeGraff publicly confirmed Honeywell is the FbW supplier for VX4 and FLRAA. Approach CS engineering leadership with a specific offer: "We're already building DO-178C FCS cert documentation for an eVTOL OEM program. We want to explore whether Honeywell CS wants a consistent cert documentation partner across your FbW portfolio." Propose a 1-day joint cert framework workshop in Phoenix.</div>
+      <div class="fast-sell">⚡ "We're the eVTOL cert docs partner for an active FAA Special Conditions program. One Hyderabad team, two eVTOL programs — your cert timeline stays protected."</div>
+    </div>
+    <div class="bu-action">
+      <div class="bu-action-title"><span class="bu-action-num">2</span>FLRAA (Bell 360) Systems Documentation — MIL-SPEC Pubs</div>
+      <div class="bu-action-body">Honeywell's 36-150 APU and Compact FbW are on the FLRAA program. Military technical publications for FLRAA will require MIL-DTL-87268 / MIL-DTL-38784 compliance. Cyient's US defense entity can handle this. Propose via Cyient's defense-cleared US staff — not offshore. Build the relationship now; FLRAA docs workstream materializes 2026–2027.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HIRING ═══ -->
+<div id="hiring" class="section">
+  <div class="section-title">💼 Hiring Intelligence</div>
+
+  <div style="background:#fef2f2;border-left:4px solid #e31837;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px;color:#7f1d1d;line-height:1.7;">
+    <strong>How to use:</strong> Cluster of open roles = funded program in pain. "Senior Avionics SW Engineer — DO-178C Level A" in Phoenix = Anthem cert sprint with budget. Use these as conversation starters — not cold-call hooks.
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Electronic Solutions — Phoenix AZ (~340 roles)</div>
+      <div style="font-size:12px;line-height:1.9;">
+        <div style="margin-bottom:8px;padding:8px;background:#fef2f2;border-radius:6px;"><strong>🔴 Critical:</strong> Sr. Avionics SW Engineer — DO-178C Level A — Anthem<br><span style="color:#666;font-size:11px;">40+ postings. Cert sprint resource-constrained. Bob Buddecke BU.</span></div>
+        <div style="margin-bottom:8px;padding:8px;background:#fff8e1;border-radius:6px;"><strong>🟡 High:</strong> Forge Cloud Platform Engineer (AWS/Azure) — Predictive Maint.<br><span style="color:#666;font-size:11px;">Forge analytics backlog from airlines. Jason Wissink team.</span></div>
+        <div style="margin-bottom:8px;padding:8px;background:#fff8e1;border-radius:6px;"><strong>🟡 High:</strong> Systems Integration Engineer — ARINC 429/664 / AFDX<br><span style="color:#666;font-size:11px;">Multi-OEM Anthem integration running simultaneously.</span></div>
+        <div style="padding:8px;background:#f5f5f5;border-radius:6px;"><strong>🟢 Emerging:</strong> eVTOL Cert Engineer — FAA Special Conditions / DO-178C FCS<br><span style="color:#666;font-size:11px;">Vertical Aerospace VX4 Anthem integration. Todd Giles CTO office.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Engines & Power Systems — Urbana OH (~150 roles)</div>
+      <div style="font-size:12px;line-height:1.9;">
+        <div style="margin-bottom:8px;padding:8px;background:#fef2f2;border-radius:6px;"><strong>🔴 Critical:</strong> Technical Publications Engineer — S1000D / ATA2200<br><span style="color:#666;font-size:11px;">TFE731 Block E + 131-9B AMM overhaul documentation behind. Dave Marinick BU.</span></div>
+        <div style="margin-bottom:8px;padding:8px;background:#fff8e1;border-radius:6px;"><strong>🟡 High:</strong> APU Sustaining Engineer — 131-9B / RE220<br><span style="color:#666;font-size:11px;">787 fleet growth driving APU MRO engineering workload.</span></div>
+        <div style="padding:8px;background:#f5f5f5;border-radius:6px;"><strong>🟢 Emerging:</strong> Production Engineering — New HTF Engine program<br><span style="color:#666;font-size:11px;">Next-generation turbofan engine development ramp.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Control Systems — Phoenix / Clearwater FL (~180 roles)</div>
+      <div style="font-size:12px;line-height:1.9;">
+        <div style="margin-bottom:8px;padding:8px;background:#fef2f2;border-radius:6px;"><strong>🔴 Critical:</strong> Fly-by-Wire SW Engineer — DO-178C FCS — eVTOL/FLRAA<br><span style="color:#666;font-size:11px;">VX4 + Bell FLRAA concurrent. Rich DeGraff BU. Very scarce skill.</span></div>
+        <div style="margin-bottom:8px;padding:8px;background:#fff8e1;border-radius:6px;"><strong>🟡 High:</strong> Military Avionics SW Engineer — EW systems (Clearwater FL)<br><span style="color:#666;font-size:11px;">Electronic warfare upgrades on military platforms. Defense funding tailwind.</span></div>
+        <div style="padding:8px;background:#f5f5f5;border-radius:6px;"><strong>🟢 Emerging:</strong> DO-254 Hardware Cert Engineer — actuation/FbW HW<br><span style="color:#666;font-size:11px;">FbW hardware DAL-B/C certification for eVTOL and FLRAA.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Bangalore IN — HTS (~200 roles)</div>
+      <div style="font-size:12px;line-height:1.9;">
+        <div style="margin-bottom:8px;padding:8px;background:#fef2f2;border-radius:6px;"><strong>🔴 Critical:</strong> Avionics SW Engineer — DO-178C — Anthem support (HTS)<br><span style="color:#666;font-size:11px;">Honeywell scaling India Anthem support team — overflow needed.</span></div>
+        <div style="margin-bottom:8px;padding:8px;background:#fff8e1;border-radius:6px;"><strong>🟡 High:</strong> Forge Data / ML Engineer — Bangalore HTS<br><span style="color:#666;font-size:11px;">Forge analytics growing in India. Airlines want local dashboards.</span></div>
+        <div style="padding:8px;background:#fff8e1;border-radius:6px;"><strong>🟡 High:</strong> PLM Engineer (Teamcenter) — Spinoff IT/OT separation<br><span style="color:#666;font-size:11px;">HONA spinoff PLM data migration running parallel in Bangalore.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Hiring Velocity Heatmap — Cyient Opportunity Score by BU</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead><tr style="background:#1a1a2e;color:white;">
+          <th style="padding:10px;text-align:left;">BU / Site</th>
+          <th style="padding:10px;text-align:left;">Role Cluster</th>
+          <th style="padding:10px;">Open ~</th>
+          <th style="padding:10px;">Cyient Fit</th>
+          <th style="padding:10px;">Speed to Rev</th>
+          <th style="padding:10px;">Signal</th>
+        </tr></thead>
+        <tbody>
+          <tr style="background:#fef2f2;"><td style="padding:9px;"><strong>ES · Phoenix AZ</strong></td><td style="padding:9px;">DO-178C Avionics SW</td><td style="padding:9px;text-align:center;">40+</td><td style="padding:9px;text-align:center;color:#2e7d32;font-weight:700;">●●●●●</td><td style="padding:9px;">6–12 mo</td><td style="padding:9px;font-size:11px;">Anthem cert sprint</td></tr>
+          <tr style="background:#fff8e1;"><td style="padding:9px;"><strong>Services · Phoenix</strong></td><td style="padding:9px;">Forge Cloud/Analytics</td><td style="padding:9px;text-align:center;">35+</td><td style="padding:9px;text-align:center;color:#2e7d32;font-weight:700;">●●●●○</td><td style="padding:9px;">3–9 mo</td><td style="padding:9px;font-size:11px;">Fleet growth + airline demand</td></tr>
+          <tr style="background:#fff8f0;"><td style="padding:9px;"><strong>E&PS · Urbana OH</strong></td><td style="padding:9px;">CMM/IPC Authoring</td><td style="padding:9px;text-align:center;">20+</td><td style="padding:9px;text-align:center;color:#2e7d32;font-weight:700;">●●●●●</td><td style="padding:9px;">3–6 mo</td><td style="padding:9px;font-size:11px;">APU/engine overhaul cycle</td></tr>
+          <tr style="background:#f8faff;"><td style="padding:9px;"><strong>CS · Phoenix / FL</strong></td><td style="padding:9px;">FbW DO-178C FCS</td><td style="padding:9px;text-align:center;">25+</td><td style="padding:9px;text-align:center;color:#2e7d32;font-weight:700;">●●●●●</td><td style="padding:9px;">6–12 mo</td><td style="padding:9px;font-size:11px;">VX4 eVTOL + FLRAA</td></tr>
+          <tr style="background:#fef2f2;"><td style="padding:9px;"><strong>HTS · Bangalore IN</strong></td><td style="padding:9px;">DO-178C + PLM</td><td style="padding:9px;text-align:center;">50+</td><td style="padding:9px;text-align:center;color:#2e7d32;font-weight:700;">●●●●●</td><td style="padding:9px;">3–9 mo</td><td style="padding:9px;font-size:11px;">HTS overflow + spinoff PLM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTACTS ═══ -->
+<div id="contacts" class="section">
+  <div class="section-title">👥 Key Contacts — All Data from HW_DATA Object</div>
+  <div style="background:#fff8e1;border-left:4px solid #ff9800;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px;color:#7f3400;line-height:1.7;">
+    <strong>Source:</strong> All names and titles sourced from official Honeywell press releases (Oct 2025, Jan 2026) and public LinkedIn. BU presidents assume new titles upon HONA spinoff completion (Q3 2026). Validate LinkedIn before outreach — titles are transitioning.
+  </div>
+  <div class="grid-2">
+    <div>
+      <div class="card-title" style="margin-bottom:12px;font-size:13px;font-weight:700;text-transform:uppercase;color:#666;">C-Suite</div>
+      <div id="exec-contacts"></div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:12px;font-size:13px;font-weight:700;text-transform:uppercase;color:#666;">BU Presidents (post-spinoff titles)</div>
+      <div id="bu-contacts"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Functional Leaders</div>
+    <div id="func-contacts" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:5px;"></div>
+  </div>
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Engagement Strategy</div>
+    <div style="font-size:12px;line-height:1.9;color:#444;">
+      <strong>Recommended entry sequence:</strong> Start with HTS India (seek Rajeev Gautam equivalent at HTS Bangalore) → establish India partnership → use India credibility to get introduced to Bob Buddecke (ES, Phoenix) for Anthem → parallel track to Dave Marinick (E&PS) via Urbana OH tech pubs manager → HONA spinoff context is the natural reason to reach out to Jim Currier / Josh Jepsen: <em>"With HAT becoming HONA, we want to explore how Cyient supports your standalone ER&D strategy from Day 1."</em>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INDIA ═══ -->
+<div id="india" class="section">
+  <div class="section-title">🇮🇳 India Strategy</div>
+  <div class="india-banner">
+    <div style="font-size:15px;font-weight:700;margin-bottom:6px;">⚠️ The Hyderabad Gap: Honeywell's Missing Aerospace ER&D Node</div>
+    <div style="font-size:12px;opacity:.93;line-height:1.7;">Honeywell Technology Solutions (HTS) Bangalore is one of the world's largest aerospace engineering centers (~3,500 engineers). But Honeywell's Hyderabad presence is limited to the Connected Enterprise (HCE) IT/analytics team (~800 people) — there is NO specialist avionics ER&D, NO DO-178C certified team, NO propulsion documentation capability in Hyderabad. Cyient BIETC is the natural candidate to fill this gap — AS9100 certified, 45 minutes from Bangalore HTS.</div>
+  </div>
+  <div class="grid-2">
+    <div class="card" style="border-top-color:#ff9800;">
+      <div class="card-title">Honeywell India — Current Footprint</div>
+      <div id="india-footprint" style="font-size:12px;line-height:1.9;"></div>
+    </div>
+    <div class="card" style="border-top-color:#4caf50;">
+      <div class="card-title">Cyient BIETC — Hyderabad Opportunity</div>
+      <div style="font-size:12px;line-height:1.9;">
+        <div style="padding:10px;background:#e8f5e9;border-radius:6px;margin-bottom:10px;">
+          <strong>✅ What BIETC brings that HCE Hyderabad does NOT have:</strong><br>
+          DO-178C Level A certified avionics SW · S1000D/ATA2200 CMM/AMM authoring · DO-254 HW cert · AS9100-certified manufacturing engineering · Propulsion (APU/engine) documentation · FbW cert documentation
+        </div>
+        <div style="padding:10px;background:#fef3c7;border-radius:6px;margin-bottom:10px;">
+          <strong>🎯 Pitch to HTS Bangalore leadership:</strong><br>
+          "HTS is at Anthem cert capacity. Cyient BIETC is 45 minutes away, AS9100 certified. We act as your Hyderabad ER&D node — Anthem overflow, propulsion docs, Forge analytics customization — under a co-delivery model with HTS."
+        </div>
+        <div style="padding:10px;background:#fce4ec;border-radius:6px;">
+          <strong>⚡ Target window:</strong> Q3 2026 — align with HONA spinoff when new ER&D vendor structures are being established by Jim Currier.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SPINOFF ═══ -->
+<div id="spinoff" class="section">
+  <div class="section-title">🔄 HONA Spinoff — ER&D Opportunity</div>
+  <div style="background:linear-gradient(135deg,#7b1fa2,#4a148c);color:white;border-radius:10px;padding:15px 20px;margin-bottom:22px;">
+    <div style="font-size:14px;font-weight:700;margin-bottom:6px;" id="spinoff-headline">—</div>
+    <div style="font-size:12px;opacity:.93;line-height:1.7;" id="spinoff-body">Loading…</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">What HAT Must Separate from Honeywell International</div>
+      <div style="font-size:12px;line-height:1.9;color:#444;">
+        <div style="margin-bottom:8px;padding:8px;background:#fff8f0;border-radius:6px;border-left:3px solid #e65100;"><strong>SAP ERP Instance</strong><br>Financial, procurement, HR data must fully separate from HON parent. HONA needs its own S/4HANA with aerospace manufacturing configuration.</div>
+        <div style="margin-bottom:8px;padding:8px;background:#fff8f0;border-radius:6px;border-left:3px solid #e65100;"><strong>PLM (Teamcenter / Windchill)</strong><br>Engineering BOM, CAD data, change management — shared today with HON parent. HONA must stand up independent PLM with full aerospace engineering data migrated.</div>
+        <div style="padding:8px;background:#fff8f0;border-radius:6px;border-left:3px solid #e65100;"><strong>MES + Cybersecurity (CMMC + ITAR)</strong><br>Manufacturing Execution Systems for Phoenix, Urbana, Clearwater, Albuquerque must be decoupled. Defense sites require CMMC framework re-certification post-separation.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cyient Entry Angles — Spinoff Window</div>
+      <div style="font-size:12px;line-height:1.9;color:#444;">
+        <div style="margin-bottom:8px;padding:8px;background:#e8f5e9;border-radius:6px;border-left:3px solid #4caf50;"><strong>PLM Data Migration</strong><br>Cyient Digital Engineering: Teamcenter/Windchill BOM and CAD migration for aerospace. We understand engineering data structure — not just database records. Pitch: "We migrate engineering data, not just rows."</div>
+        <div style="margin-bottom:8px;padding:8px;background:#e8f5e9;border-radius:6px;border-left:3px solid #4caf50;"><strong>Aerospace SAP Template</strong><br>AS9100 quality modules, MRO scheduling, product costing. Propose aerospace SAP configuration workstream from Hyderabad under HONA transformation program. Target Josh Jepsen (CFO).</div>
+        <div style="padding:8px;background:#e8f5e9;border-radius:6px;border-left:3px solid #4caf50;"><strong>Get on HONA Approved Vendor List NOW</strong><br>Register before Day 1. HON corporate MSAs may not carry over. The HONA vendor qualification window is open from now to Q3 2026.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROGRAMS ═══ -->
+<div id="programs" class="section">
+  <div class="section-title">✈️ Platform Programs by BU</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🖥️ ES — Anthem Avionics Platform</div>
+      <span class="prog-badge" style="background:#fdecea;color:#c62828;">IN CERTIFICATION</span><span class="prog-badge" style="background:#e8f5e9;color:#1b5e20;">MULTI-OEM</span>
+      <div style="font-size:12px;line-height:1.8;color:#444;margin-top:10px;">Next-gen touchscreen cockpit replacing Primus Epic. First OEM: Embraer E-Jet NXT. Vertical Aerospace VX4 for eVTOL. Architecture: ARINC 664 backbone, DO-178C Level A, touchscreen PFD+MFD. Mach 0.93 biz jet capability. Multi-OEM certification running simultaneously — ES is the budget owner under Bob Buddecke.<br><br><strong>Cyient:</strong> DO-178C Level A cert SW team + V&V from Hyderabad.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🛡️ CS — Compact Fly-by-Wire System</div>
+      <span class="prog-badge" style="background:#fce4ec;color:#880e4f;">DEFENSE GROWTH</span><span class="prog-badge" style="background:#fdecea;color:#c62828;">eVTOL</span>
+      <div style="font-size:12px;line-height:1.8;color:#444;margin-top:10px;">Honeywell Compact FbW selected for Vertical Aerospace VX4 (launch customer, inceptors + FbW) and Bell FLRAA Future Long-Range Assault Aircraft (36-150 APU + Attune system). Rich DeGraff confirmed both programs publicly. Lightest/most compact inceptor in class. First-mover in eVTOL flight controls market.<br><br><strong>Cyient:</strong> DO-178C FCS cert docs + DO-254 HW cert. Same Hyderabad team as Eve eVTOL.</div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">⚙️ E&PS — TFE731 / HTF7000 / 131-9B APU</div>
+      <span class="prog-badge" style="background:#e3f2fd;color:#1565c0;">MRO GROWING</span>
+      <div style="font-size:12px;line-height:1.8;color:#444;margin-top:10px;"><strong>TFE731:</strong> 4,000+ active units on Falcon, Learjet, Legacy fleet. Block E overhaul documentation behind schedule. Dave Marinick's BU bears the cost.<br><strong>HTF7000:</strong> 1,200+ units on Gulfstream G280, Challenger 300/350. CMM revision needed.<br><strong>131-9B APU:</strong> Sole-source on Boeing 787 (all variants). 1,000+ in-service. Growing MRO volume.<br><br><strong>Cyient:</strong> CMM/IPC authoring from Hyderabad — S1000D XML, 15–25 FTE.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">☁️ Services — Honeywell Forge Connected Aircraft</div>
+      <span class="prog-badge" style="background:#e8f5e9;color:#1b5e20;">7,800+ AIRCRAFT</span>
+      <div style="font-size:12px;line-height:1.8;color:#444;margin-top:10px;">Jason Wissink's Services & Connectivity unit operates Forge — cloud IoT platform for connected aviation. 7,800+ aircraft on-platform, up 18% YoY. AWS primary, Azure analytics. Predictive maintenance, fuel analytics, health monitoring for airlines and MRO operators.<br><br><strong>Customers:</strong> 50+ airlines/operators including major US, European, Middle East carriers.<br><br><strong>Cyient:</strong> Forge analytics SI — predictive maintenance modules from Hyderabad.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMPETITIVE ═══ -->
+<div id="competitive" class="section">
+  <div class="section-title">⚔️ Competitive Intel — ER&D Vendor Landscape</div>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:#1a1a2e;color:white;">
+        <th style="padding:10px;text-align:left;">Vendor</th>
+        <th style="padding:10px;text-align:left;">Footprint at Honeywell</th>
+        <th style="padding:10px;text-align:left;">Known Engagement</th>
+        <th style="padding:10px;text-align:left;">Cyient vs.</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="padding:9px;font-weight:600;">HCL Technologies</td><td style="padding:9px;"><span class="tag">IT/OT</span></td><td style="padding:9px;font-size:11px;">Major IT partnership (SAP, infra, HCE Hyderabad). Not deep in aerospace ER&D or cert engineering.</td><td style="padding:9px;font-size:11px;color:#1b5e20;">Cyient is engineering ER&D — avionics cert, propulsion docs. Complementary, not competing. Position as aerospace ER&D, not IT services.</td></tr>
+        <tr style="background:#f9f9f9;"><td style="padding:9px;font-weight:600;">Tata Technologies</td><td style="padding:9px;"><span class="tag">Product Eng</span></td><td style="padding:9px;font-size:11px;">Product lifecycle engineering for some Honeywell mechanical components. Automotive-primary — aerospace cert is secondary.</td><td style="padding:9px;font-size:11px;color:#1b5e20;">Cyient is aerospace-native. DO-178C, AS9100, S1000D depth is greater. TCS is not a DO-178C shop.</td></tr>
+        <tr><td style="padding:9px;font-weight:600;">LTTS (L&T Tech Svcs)</td><td style="padding:9px;"><span class="tag">ER&D</span></td><td style="padding:9px;font-size:11px;">LTTS has aerospace ER&D and competes directly with Cyient on avionics SW and systems engineering across the Honeywell vendor landscape.</td><td style="padding:9px;font-size:11px;color:#e31837;">Primary competitor. Differentiate on: MRO/propulsion tech pubs depth (LTTS weaker), BIETC Hyderabad vs. LTTS Bangalore, eVTOL cert track record (Eve program), FbW DO-178C FCS.</td></tr>
+        <tr style="background:#f9f9f9;"><td style="padding:9px;font-weight:600;">Collins Aerospace (RTX)</td><td style="padding:9px;"><span class="tag">OEM competitor</span></td><td style="padding:9px;font-size:11px;">Collins competes with Honeywell ES on avionics (Pro Line Fusion vs. Anthem). Not an ER&D vendor — an existential threat to Anthem's market share.</td><td style="padding:9px;font-size:11px;color:#1b5e20;">Use this framing: cert delays on Anthem = market share Collins can capture. Cyient cert support is "Anthem schedule insurance" — not a cost, a competitive necessity.</td></tr>
+        <tr><td style="padding:9px;font-weight:600;">Garmin (Aviation)</td><td style="padding:9px;"><span class="tag">OEM competitor</span></td><td style="padding:9px;font-size:11px;">Garmin G3000/G5000 competes with Anthem in bizjet cockpit market. Not an ER&D vendor at Honeywell.</td><td style="padding:9px;font-size:11px;color:#1b5e20;">Same framing as Collins. Anthem's cert timeline pressure is real — Garmin moves fast. Cyient's cert support protects Anthem's market timing.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="vg-block">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px;">🔍 Verify Global — Field-Check Before Every Pursuit</div>
+    <div style="font-size:11.5px;opacity:.92;line-height:1.7;">Before any Honeywell sales pursuit: (1) LinkedIn search "Honeywell + [LTTS / HCL / Tata Tech] + avionics" — check for new partnership announcements, (2) Monitor HONA Form 10 SEC filings for ER&D vendor disclosures, (3) Ask your Cyient Honeywell contacts directly: "Who else are you working with for avionics cert support?" Intelligence above is sourced from public data as of Apr 2026 — field-verify before assuming competitive landscape is static.</div>
+  </div>
+</div>
+
+<!-- ═══ SKILLS ═══ -->
+<div id="skills" class="section">
+  <div class="section-title">⚡ Fast-Sell Skills Matrix</div>
+  <div style="overflow-x:auto;margin-bottom:25px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="background:#e31837;color:white;">
+        <th style="padding:12px;text-align:left;">Honeywell Pain</th>
+        <th style="padding:12px;text-align:left;">Cyient Proof Point</th>
+        <th style="padding:12px;text-align:left;">BU Owner</th>
+        <th style="padding:12px;text-align:left;">Deal Est.</th>
+      </tr></thead>
+      <tbody id="skills-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ REFERENCE ═══ -->
+<div id="reference" class="section">
+  <div class="section-title">📚 Market Context</div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Why Honeywell Now — 4 Macro Tailwinds</div>
+      <div style="font-size:12px;line-height:1.9;color:#444;">
+        <strong>1. HONA spinoff creates new vendor openings:</strong> HAT as a standalone entity resets its approved vendor list. Once-in-a-decade entry opportunity for ER&D partners not previously in the HON corporate program.<br><br>
+        <strong>2. Anthem is Honeywell's biggest R&D bet:</strong> The avionics platform market is ~$8B and Collins is gaining ground. Every cert delay for Anthem is market share Collins captures. Cert ER&D budget is protected even in downturns — schedule risk is existential.<br><br>
+        <strong>3. Record $37.5B backlog drives production engineering demand:</strong> Orders grew 23% organically in Q4 2025. Production ramp across E&PS and CS requires engineering documentation, process engineering, and supplier quality support.<br><br>
+        <strong>4. eVTOL + FLRAA first-mover position:</strong> Honeywell CS won two landmark eVTOL/military FbW contracts. Cert documentation for novel FbW architectures is a greenfield — no established vendor ecosystem. First-mover cert partner locks in multi-year relationship.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Data Sources for 5-Day Refresh Cycle</div>
+      <div style="font-size:12px;line-height:1.9;color:#444;">
+        <strong>Financial:</strong><br>
+        · HON quarterly earnings (NASDAQ: HON)<br>
+        · HONA Form 10 / S-11 SEC filings (post-spinoff)<br>
+        · Honeywell Investor Day presentations<br>
+        · investor.honeywell.com<br><br>
+        <strong>Leadership / Org:</strong><br>
+        · honeywell.com/us/en/press releases<br>
+        · LinkedIn: Jim Currier, Bob Buddecke, Dave Marinick, Rich DeGraff, Josh Jepsen, Todd Giles<br><br>
+        <strong>Hiring:</strong><br>
+        · careers.honeywell.com<br>
+        · LinkedIn Jobs: "Honeywell Aerospace" + site filter<br><br>
+        <strong>Program intel:</strong><br>
+        · FAA TCDS (Anthem cert status)<br>
+        · usaspending.gov (FLRAA / DoD contracts)<br>
+        · Aviation Week Honeywell coverage<br>
+        · AIN (Aviation International News) Honeywell tag
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-content -->
+</div><!-- /container -->
+
+<!-- ══ JAVASCRIPT — ALL RENDERING FROM HW_DATA OBJECT ══ -->
+<script>
+function switchSection(event, id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (event && event.currentTarget) event.currentTarget.classList.add('active');
+}
+
+function initDashboard() {
+  const d = HW_DATA;
+
+  // ── Topbar & banner ──────────────────────────────────────────────────
+  document.getElementById('sb-refresh').textContent  = d.lastRefreshed;
+  document.getElementById('tb-backlog').textContent  = '$' + d.backlog + 'B Backlog';
+  document.getElementById('tb-hc').textContent       = d.headcount.toLocaleString() + ' Employees';
+  document.getElementById('tb-ticker').textContent   = d.spinoff.newTicker + ':NASDAQ (spinoff)';
+  document.getElementById('banner-text').innerHTML   =
+    '📡 Honeywell Aerospace Technologies · CEO: ' + d.leadership.ceo.name +
+    ' · Spinoff ticker <strong>' + d.spinoff.newTicker + '</strong> · Target ' + d.spinoff.status +
+    ' · $' + d.revenue + 'B revenue FY2025 · Record $' + d.backlog + 'B backlog · ' +
+    d.openRoles + '+ open roles';
+  document.getElementById('banner-date').textContent = 'Data: ' + d.lastRefreshed;
+  document.getElementById('sb-meta').innerHTML =
+    d.hq + ' · ' + d.spinoff.status + '<br>' + d.spinoff.newTicker + ' · $' + d.revenue + 'B revenue';
+
+  // ── KPIs ─────────────────────────────────────────────────────────────
+  document.getElementById('kpi-rev').textContent    = '$' + d.revenue + 'B';
+  document.getElementById('kpi-rev-g').textContent  = '↑ +' + d.revenueGrowth + '% YoY';
+  document.getElementById('kpi-bl').textContent     = '$' + d.backlog + 'B';
+  document.getElementById('kpi-bl-g').textContent   = '↑ +' + d.backlogGrowth + '% YoY (record)';
+  document.getElementById('kpi-margin').textContent = d.ebitMargin + '%';
+  document.getElementById('kpi-roles').textContent  = d.openRoles + '+';
+
+  // ── Strategic banner ─────────────────────────────────────────────────
+  document.getElementById('strat-headline').textContent =
+    '🚀 Strategic Context: HONA Spinoff + Anthem Cert Sprint = Peak ER&D Opportunity';
+  document.getElementById('strat-body').innerHTML =
+    'Honeywell Aerospace Technologies is separating from Honeywell International as an independent company (' +
+    d.spinoff.newTicker + ' on ' + d.spinoff.exchange + ', ' + d.spinoff.status + '). ' +
+    d.leadership.ceo.name + ' (CEO) and ' + d.leadership.cfo.name + ' (CFO, since ' + d.leadership.cfo.since + ') are building a new standalone vendor ecosystem. ' +
+    '<strong>3 P&L segments:</strong> ' +
+    d.segments.es.name + ' ($' + d.segments.es.revenue + 'B · ' + d.segments.es.president + ') — Anthem, Space & Defense, Connected Aerospace; ' +
+    d.segments.eps.name + ' ($' + d.segments.eps.revenue + 'B · ' + d.segments.eps.president + ') — APUs, turbines, engine controls; ' +
+    d.segments.cs.name + ' ($' + d.segments.cs.revenue + 'B · ' + d.segments.cs.president + ') — Mechanical Systems, FbW, thermal, wheels. ' +
+    '<strong>8 internal operational units</strong> (from AOP org) map under these 3 segments plus 3 cross-cutting functions. ' +
+    'Record $' + d.backlog + 'B backlog · $' + d.revenue + 'B FY2025 revenue. ' +
+    'India HTS Bangalore (~3,500 engineers) established — Hyderabad has zero aerospace ER&D. ' +
+    '<strong>Cyient BIETC Hyderabad is the missing node.</strong>';
+
+  // ── BU Donut Chart ───────────────────────────────────────────────────
+  new Chart(document.getElementById('buChart'), {
+    type: 'doughnut',
+    data: {
+      labels: d.buSplit.labels,
+      datasets: [{ data: d.buSplit.pcts, backgroundColor: d.buSplit.colors, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } } }, cutout: '62%' }
+  });
+
+  // ── Opportunity bars ─────────────────────────────────────────────────
+  const oppEl = document.getElementById('opp-bars');
+  d.opportunities.forEach(o => {
+    oppEl.innerHTML += `
+      <div class="prog-row">
+        <div class="prog-label"><span>${o.label}</span><span>${o.score}</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${o.score}%"></div></div>
+      </div>`;
+  });
+
+  // ── Sites grid ───────────────────────────────────────────────────────
+  const sitesEl = document.getElementById('sites-grid');
+  Object.values(d.sites).forEach(s => {
+    const isGap   = s.gap;
+    const border  = isGap ? '1px dashed #ff9800' : 'none';
+    const bg      = isGap ? '#fff8e1' : '#f9f9f9';
+    const lbl     = s.roles >= 3000 ? 'loc-india' : (s.label.includes('IN') ? 'loc-india' : 'loc-us');
+    sitesEl.innerHTML += `
+      <div style="background:${bg};border-radius:8px;padding:12px 16px;min-width:190px;border-left:3px solid #e31837;border:${border};">
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px;">${s.label} <span class="${lbl}">${s.bu}</span></div>
+        <div style="font-size:11px;color:${isGap ? '#92400e' : '#555'};line-height:1.6;">${isGap ? '⚠️ ' : ''}${s.role}${s.gap ? ' — <strong>No aerospace ER&D. Cyient BIETC opportunity.</strong>' : ''}</div>
+        <div style="font-size:10px;color:#999;margin-top:4px;">${s.roles.toLocaleString()} engineers</div>
+      </div>`;
+  });
+
+  // ── Org section — exec cards ─────────────────────────────────────────
+  const execEl = document.getElementById('exec-cards');
+  [d.leadership.ceo, d.leadership.cfo, d.leadership.cto].forEach(e => {
+    execEl.innerHTML += `
+      <div class="card">
+        <div style="font-weight:700;font-size:15px;color:#1a1a2e;margin-bottom:4px;">${e.name}</div>
+        <div style="font-size:11px;color:#e31837;font-weight:600;margin-bottom:6px;">${e.title}</div>
+        <div style="font-size:11px;color:#666;">📍 ${e.location} · Since ${e.since}</div>
+        ${e.note ? `<div style="font-size:11px;color:#999;margin-top:4px;">${e.note}</div>` : ''}
+      </div>`;
+  });
+
+  // ── Org section — 3 P&L segments with internal sub-units ─────────────
+  const buCardsEl = document.getElementById('bu-cards');
+  Object.values(d.segments).forEach(seg => {
+    // Find internal units that belong to this segment (match by segment key)
+    const segKey = Object.keys(d.segments).find(k => d.segments[k] === seg);
+    const ius = Object.values(d.internalUnits).filter(u => u.parentSegment === segKey);
+    // Build sub-unit rows
+    let iuRows = ius.map(iu => `
+      <div style="border:1px solid #e0e0e0;border-radius:8px;padding:12px;background:#fafafa;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:${iu.headerColor};flex-shrink:0;"></div>
+          <span style="font-weight:700;font-size:12px;color:#1a1a2e;">${iu.name}</span>
+          <span style="font-size:10px;color:#999;">Lead: ${iu.lead}</span>
+        </div>
+        <div style="font-size:11px;color:#555;margin-bottom:5px;">
+          <strong>Sub-units:</strong> ${iu.subunits.join(' · ')}
+        </div>
+        <div style="font-size:11px;color:#777;margin-bottom:5px;">
+          <strong>Key products:</strong> ${iu.keyProducts.slice(0,4).join(', ')}
+        </div>
+        <div style="background:#e8f5e9;border-left:3px solid #4caf50;padding:5px 8px;border-radius:0 4px 4px 0;font-size:10px;color:#1b5e20;font-weight:600;">
+          ⚡ Cyient: ${iu.cyientFocus}
+        </div>
+      </div>`).join('');
+
+    buCardsEl.innerHTML += `
+      <div class="bu-block" style="margin-bottom:24px;">
+        <div class="bu-header" style="background:${seg.color};">
+          <div style="flex:1;">
+            <div class="bu-header-title">${seg.name} (${seg.short}) — <span style="font-weight:400;font-size:13px;">$${seg.revenue}B FY2025</span></div>
+            <div class="bu-header-sub">${seg.presTitle} · ${seg.presYears}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:20px;font-weight:700;color:white;">$${seg.revenue}B</div>
+            <div style="font-size:10px;opacity:.8;">FY2025 net sales</div>
+          </div>
+        </div>
+        <div class="bu-action">
+          <div style="font-size:12px;color:#555;margin-bottom:12px;">${seg.description}</div>
+          <div style="font-size:11px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">
+            Internal Operational Units that report into ${seg.short}:
+          </div>
+          ${iuRows || '<div style="font-size:11px;color:#999;padding:8px;">— Internal unit mapping TBC —</div>'}
+          <div style="margin-top:10px;padding:8px 10px;background:#fef2f2;border-left:3px solid #e31837;border-radius:0 6px 6px 0;font-size:11px;">
+            <strong>~${seg.openRoles} open roles</strong> · Cyient angle: ${seg.cyientAngle}
+          </div>
+        </div>
+      </div>`;
+  });
+
+  // ── Org section — cross-cutting functional units ─────────────────────
+  const funcEl = document.getElementById('func-leaders');
+  Object.values(d.internalUnits).filter(u => u.parentSegment === 'cross').forEach(u => {
+    funcEl.innerHTML += `
+      <div style="background:#f9f9f9;border-radius:8px;padding:12px 16px;min-width:210px;flex:1;border-left:3px solid #555;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+          <div style="width:10px;height:10px;border-radius:50%;background:${u.headerColor};"></div>
+          <span style="font-weight:700;font-size:13px;color:#1a1a2e;">${u.name}</span>
+        </div>
+        <div style="font-size:11px;color:#e31837;margin-bottom:4px;font-weight:600;">${u.lead}</div>
+        <div style="font-size:11px;color:#555;margin-bottom:5px;"><strong>Sub-units:</strong> ${u.subunits.join(', ')}</div>
+        <div style="font-size:10px;background:#e8f5e9;padding:4px 8px;border-radius:4px;color:#1b5e20;font-weight:600;">⚡ ${u.cyientFocus}</div>
+      </div>`;
+  });
+
+  // ── Org chart boxes ──────────────────────────────────────────────────
+  document.getElementById('org-ceo-box').textContent = d.leadership.ceo.name + ' — ' + d.leadership.ceo.title;
+  const orgBuEl = document.getElementById('org-bu-boxes');
+  Object.values(d.segments).forEach(seg => {
+    orgBuEl.innerHTML += `
+      <div style="background:${seg.color};color:white;padding:10px 16px;border-radius:8px;font-size:12px;font-weight:700;text-align:center;min-width:200px;">
+        ${seg.president}<br>
+        <span style="font-size:10px;opacity:.9;font-weight:400;">${seg.name} · $${seg.revenue}B</span>
+      </div>`;
+  });
+  const orgFuncEl = document.getElementById('org-func-boxes');
+  [d.leadership.cfo, d.leadership.cto, ...d.functionalLeaders].forEach(f => {
+    const nm = f.name || '—';
+    const tt = (f.title || '').split(',')[0];
+    orgFuncEl.innerHTML += `<div style="background:#555;color:white;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:600;text-align:center;min-width:160px;">${nm}<br><span style="font-size:10px;opacity:.85;font-weight:400;">${tt}</span></div>`;
+  });
+
+  // ── Contacts section ─────────────────────────────────────────────────
+  const execCEl = document.getElementById('exec-contacts');
+  [d.leadership.ceo, d.leadership.cfo, d.leadership.cto].forEach(e => {
+    execCEl.innerHTML += `<div class="contact-card"><div class="contact-name">${e.name}</div><div class="contact-title">${e.title}</div><div class="contact-location">📍 ${e.location} · Since ${e.since}${e.note ? ' · ' + e.note : ''}</div></div>`;
+  });
+  const buCEl = document.getElementById('bu-contacts');
+  Object.values(d.segments).forEach(seg => {
+    buCEl.innerHTML += `<div class="contact-card"><div class="contact-name">${seg.president}</div><div class="contact-title">${seg.presTitle}</div><div class="contact-location">📍 Phoenix, AZ · ${seg.presYears} · Segment revenue: $${seg.revenue}B</div></div>`;
+  });
+  const funcCEl = document.getElementById('func-contacts');
+  d.functionalLeaders.forEach(f => {
+    funcCEl.innerHTML += `<div class="contact-card" style="margin-bottom:0;"><div class="contact-name">${f.name}</div><div class="contact-title">${f.title}</div><div class="contact-location">📍 ${f.location} · ${f.bu}</div></div>`;
+  });
+
+  // ── Spinoff section ──────────────────────────────────────────────────
+  document.getElementById('spinoff-headline').textContent =
+    'HONA Spinoff: ' + d.spinoff.status + ' · ' + d.spinoff.newTicker + ':' + d.spinoff.exchange + ' · ' + d.hq;
+  document.getElementById('spinoff-body').innerHTML =
+    'CEO ' + d.leadership.ceo.name + ' and CFO ' + d.leadership.cfo.name + ' (joining ' + d.leadership.cfo.since + ') are building a new standalone company from $' + d.revenue + 'B in aerospace revenue. ' +
+    'The spinoff separates HAT from Honeywell International\'s shared IT/OT infrastructure — SAP, PLM, MES, cybersecurity, HR systems all must be rebuilt independently. ' +
+    'This is a $500M+ transformation program creating new ER&D vendor openings at exactly the moment Jim Currier is establishing HONA\'s standalone partner ecosystem. ' +
+    '<strong>The spinoff window closes Q3 2026 — act now to get on the HONA approved vendor list.</strong>';
+
+  // ── India section ────────────────────────────────────────────────────
+  const indiaEl = document.getElementById('india-footprint');
+  Object.values(d.sites).forEach(s => {
+    const isGap = s.gap;
+    indiaEl.innerHTML += `
+      <div style="padding:10px;background:${isGap ? '#fff8e1' : '#f3f4f6'};border-radius:6px;margin-bottom:10px;">
+        <strong>📍 ${s.label} (~${s.roles.toLocaleString()} engineers)</strong><br>
+        ${s.role}${isGap ? '<br><span style="color:#92400e;font-weight:600;">⚠️ IT center only — no aerospace ER&D or DO-178C capability.</span>' : ''}
+      </div>`;
+  });
+
+  // ── Skills matrix ─────────────────────────────────────────────────────
+  const skillsRows = [
+    { pain: 'Anthem cert sprint: not enough DO-178C Level A engineers in Phoenix', proof: 'Cyient DAL-A avionics SW team running on same cert standard. Onboard to Anthem toolchain in 6 weeks.', bu: 'ES · Bob Buddecke', deal: '$8–15M/yr' },
+    { pain: 'TFE731 / 131-9B AMM overhaul documentation behind schedule', proof: 'Cyient S1000D/ATA2200 authoring on comparable turbofan. 15–25 FTE available.', bu: 'E&PS · Dave Marinick', deal: '$3–6M/yr' },
+    { pain: 'eVTOL / FLRAA FbW: no established cert documentation partner', proof: 'Cyient building DO-178C FCS cert docs for an active FAA Special Conditions eVTOL program.', bu: 'CS · Rich DeGraff', deal: '$4–8M/yr' },
+    { pain: 'Forge analytics backlog — not enough data engineers', proof: 'Cyient Digital: predictive maintenance analytics on aerospace IoT. 6-week PoV proposal.', bu: 'Services · Jason Wissink', deal: '$3–6M/yr' },
+    { pain: 'Aftermarket tech pubs cost overrun — outdated AMMs driving MRO inefficiency', proof: 'Cyient tech pubs: structured authoring reduces shop-turn time. ROI case for Heath Patrick P&L.', bu: 'Aftermarket · Heath Patrick', deal: '$2–5M/yr' },
+    { pain: 'HONA spinoff: PLM and ERP separation behind plan', proof: 'Cyient Digital Engineering: Teamcenter PLM migration with aerospace engineering data expertise.', bu: 'Corporate · Josh Jepsen (CFO)', deal: '$5–12M' },
+    { pain: 'India: HTS Bangalore at capacity for Anthem cert support', proof: 'Cyient BIETC Hyderabad — 45 min from HTS Bangalore. AS9100 certified DO-178C team. Acts as HTS overflow node.', bu: 'HTS · Bangalore / Hyderabad', deal: '$4–8M/yr' }
+  ];
+  const stEl = document.getElementById('skills-table');
+  skillsRows.forEach((r, i) => {
+    stEl.innerHTML += `<tr style="${i%2===1?'background:#f9f9f9':''}">
+      <td style="padding:10px;font-weight:600;">${r.pain}</td>
+      <td style="padding:10px;">${r.proof}</td>
+      <td style="padding:10px;"><span class="tag tag-accent">${r.bu}</span></td>
+      <td style="padding:10px;font-weight:700;color:#1a1a2e;">${r.deal}</td>
+    </tr>`;
+  });
+
+  // ── Action BU headers (dynamic from segments data) ───────────────────
+  const es = d.segments.es, eps = d.segments.eps, cs = d.segments.cs;
+  const esIU = d.internalUnits.electronicSolutions;
+  const epsIU = d.internalUnits.enginesPS;
+  const csIU  = d.internalUnits.mechanicalSystems;
+  document.getElementById('action-es-hdr').textContent  = '🖥️ ' + es.name + ' (' + es.short + ') — ' + es.president + ' · $' + es.revenue + 'B';
+  document.getElementById('action-es-sub').textContent  = esIU.subunits.slice(0,4).join(' · ') + ' · + Space & Defense · Connected Aerospace · Phoenix AZ';
+  document.getElementById('action-eps-hdr').textContent = '⚙️ ' + eps.name + ' (' + eps.short + ') — ' + eps.president + ' · $' + eps.revenue + 'B';
+  document.getElementById('action-eps-sub').textContent = epsIU.subunits.join(' · ') + ' · Urbana OH';
+  document.getElementById('action-cs-hdr').textContent  = '🛡️ ' + cs.name + ' (' + cs.short + ') — ' + cs.president + ' · $' + cs.revenue + 'B';
+  document.getElementById('action-cs-sub').textContent  = csIU.subunits.join(' · ') + ' · Phoenix / Clearwater FL';
+}
+
+document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>
