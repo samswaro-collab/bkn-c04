@@ -118,9 +118,9 @@ const HW_DATA = {
 
   // ── Leadership (verified from Honeywell press releases Jan 2026) ──────
   leadership: {
-    ceo:  { name: "Jim Currier",   title: "President & CEO, Honeywell Aerospace Technologies",         since: "Nov 2025", location: "Phoenix, AZ" },
-    cfo:  { name: "Josh Jepsen",   title: "CFO, Honeywell Aerospace Technologies",                     since: "Feb 2026", location: "Phoenix, AZ", note: "Former CFO, Deere & Company" },
-    cto:  { name: "Todd Giles",    title: "Chief Technology Officer, Honeywell Aerospace Technologies", since: "2024",     location: "Phoenix, AZ" }
+    ceo:  { name: "Jim Currier",   title: "President & CEO, Honeywell Aerospace Technologies", linkedInUrl: "https://www.linkedin.com/search/results/people/?keywords=Jim%20Currier%20Honeywell%20Aerospace%20Technologies%20CEO",         since: "Nov 2025", location: "Phoenix, AZ" },
+    cfo:  { name: "Josh Jepsen",   title: "CFO, Honeywell Aerospace Technologies", linkedInUrl: "https://www.linkedin.com/search/results/people/?keywords=Josh%20Jepsen%20Honeywell%20Aerospace%20Technologies%20CFO",                     since: "Feb 2026", location: "Phoenix, AZ", note: "Former CFO, Deere & Company" },
+    cto:  { name: "Todd Giles",    title: "Chief Technology Officer, Honeywell Aerospace Technologies", linkedInUrl: "https://www.linkedin.com/search/results/people/?keywords=Todd%20Giles%20Honeywell%20Aerospace%20Technologies%20CTO", since: "2024",     location: "Phoenix, AZ" }
   },
 
   // ══════════════════════════════════════════════════════════════════════
@@ -254,9 +254,9 @@ const HW_DATA = {
 
   // ── Functional Leaders (cross-BU — confirmed from public announcements) ─
   functionalLeaders: [
-    { name: "Heath Patrick",  title: "President, Americas Aftermarket",    unit: "Aftermarket",              location: "Phoenix, AZ" },
-    { name: "Jason Wissink",  title: "President, Services & Connectivity", unit: "Connected Aerospace",      location: "Phoenix, AZ" },
-    { name: "Toby Price",     title: "VP, Customer Experience",            unit: "Customer & Product Support",location: "Phoenix, AZ" }
+    { name: "Heath Patrick",  title: "President, Americas Aftermarket",    unit: "Aftermarket", linkedInUrl: "https://www.linkedin.com/search/results/people/?keywords=Heath%20Patrick%20Honeywell%20Aerospace%20Americas%20Aftermarket",              location: "Phoenix, AZ" },
+    { name: "Jason Wissink",  title: "President, Services & Connectivity", unit: "Connected Aerospace", linkedInUrl: "https://www.linkedin.com/search/results/people/?keywords=Jason%20Wissink%20Honeywell%20Aerospace%20Services%20Connectivity",      location: "Phoenix, AZ" },
+    { name: "Toby Price",     title: "VP, Customer Experience",            unit: "Customer & Product Support", linkedInUrl: "https://www.linkedin.com/search/results/people/?keywords=Toby%20Price%20Honeywell%20Aerospace%20Customer%20Experience%20VP",location: "Phoenix, AZ" }
   ],
 
   // ── Key Sites ─────────────────────────────────────────────────────────
@@ -419,6 +419,8 @@ const HW_DATA = {
     <div class="sidebar-label">Reference</div>
     <div class="sidebar-item" onclick="switchSection(event,'reference')">📚 Market Context</div>
   </div>
+  
+  <div style="padding:8px 15px 4px 15px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#999;margin-bottom:4px;letter-spacing:0.5px;">Financial</div><div style="padding:7px 0px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.85);" onclick="switchSection ? switchSection(event,'financial') : (document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')), document.getElementById('financial')?.classList.add('active'))">💹 Financial Health</div></div>
   <div style="padding:15px;font-size:10px;color:#666;border-top:1px solid rgba(255,255,255,0.1);margin-top:10px;">
     Last refreshed: <span id="sb-refresh">—</span>
   </div>
@@ -1074,7 +1076,7 @@ const HW_DATA = {
         <div style="font-size:13px;font-weight:700;color:#0a2342;margin-bottom:6px;">🤝 Microsoft (Azure + Honeywell Forge)</div>
         <div style="font-size:12px;color:#444;line-height:1.65;margin-bottom:8px;">Cyient as Azure-native engineering services partner for Honeywell's digital transformation. Honeywell Forge integrates with Microsoft Dynamics 365 Field Service — Cyient can provide implementation, customization, and IoT data engineering on top of the Azure + Forge stack. HTS Bangalore is Azure-aligned, creating a natural Cyient Hyderabad CoE bridge.</div>
         <div style="background:#f0f6ff;border-radius:6px;padding:7px 10px;font-size:11px;color:#0055a5;font-weight:600;">
-          👤 <strong>Rep / Contact:</strong> Search: 'Microsoft Honeywell Account Executive' — Honeywell is a Premier Microsoft partner with dedicated account team
+          👤 <strong>Rep / Contact:</strong> <a href="https://www.linkedin.com/search/results/people/?keywords=Microsoft%20Honeywell%20Account%20Executive" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:#0a66c2;font-weight:600;text-decoration:none;background:#f0f7ff;padding:4px 9px;border-radius:4px;border:1px solid #c7dff7;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> Search on LinkedIn</a> — Honeywell is a Premier Microsoft partner with dedicated account team
         </div>
       </div>
       <div style="background:white;border-radius:10px;border-left:4px solid #005a9e;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.08);margin-bottom:14px;">
@@ -1088,7 +1090,7 @@ const HW_DATA = {
         <div style="font-size:13px;font-weight:700;color:#0a2342;margin-bottom:6px;">🤝 C3.ai</div>
         <div style="font-size:12px;color:#444;line-height:1.65;margin-bottom:8px;">Cyient as C3.ai implementation partner for Honeywell's predictive maintenance programs. C3.ai-Honeywell partnership targets APU maintenance optimization and engine health monitoring. Cyient provides engineering services to configure and tune AI models using Honeywell's engine sensor data.</div>
         <div style="background:#f0f6ff;border-radius:6px;padding:7px 10px;font-size:11px;color:#0055a5;font-weight:600;">
-          👤 <strong>Rep / Contact:</strong> Search: 'C3.ai Honeywell account' or 'C3.ai aerospace partner' on LinkedIn
+          👤 <strong>Rep / Contact:</strong> <a href="https://www.linkedin.com/search/results/people/?keywords=C3.ai%20Honeywell%20account" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:#0a66c2;font-weight:600;text-decoration:none;background:#f0f7ff;padding:4px 9px;border-radius:4px;border:1px solid #c7dff7;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> Search on LinkedIn</a> or 'C3.ai aerospace partner' on LinkedIn
         </div>
       </div>
 
@@ -1103,7 +1105,7 @@ const HW_DATA = {
         </div>
         <div style="font-size:12px;color:#444;line-height:1.65;margin-bottom:8px;">Cyient's wiring harness team delivers Capital-based harness design and documentation services for avionics products — schematic to formboard to IPC-620 final package. Honeywell's IS&S and Safety & Productivity programs involve dense LRU-to-LRU wiring at aircraft level. Pitch: 'Cyient Hyderabad EWIS team handles Capital wiring packages for Honeywell avionics programs at India speed and cost.'</div>
         <div style="background:#f0f6ff;border-radius:6px;padding:7px 10px;font-size:11px;color:#0055a5;font-weight:600;">
-          👤 <strong>Rep / Contact:</strong> Search: 'Siemens Digital Industries Honeywell Aerospace Account Executive' on LinkedIn
+          👤 <strong>Rep / Contact:</strong> <a href="https://www.linkedin.com/search/results/people/?keywords=Siemens%20Digital%20Industries%20Honeywell%20Aerospace%20Account%20Executive" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:#0a66c2;font-weight:600;text-decoration:none;background:#f0f7ff;padding:4px 9px;border-radius:4px;border:1px solid #c7dff7;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> Search on LinkedIn</a>
         </div>
       </div>
 <!-- ── END TECHNOLOGY ECOSYSTEM ── -->
@@ -1305,7 +1307,7 @@ function initDashboard() {
   // ── Contacts section ─────────────────────────────────────────────────
   const execCEl = document.getElementById('exec-contacts');
   [d.leadership.ceo, d.leadership.cfo, d.leadership.cto].forEach(e => {
-    execCEl.innerHTML += `<div class="contact-card"><div class="contact-name">${e.name}</div><div class="contact-title">${e.title}</div><div class="contact-location">📍 ${e.location} · Since ${e.since}${e.note ? ' · ' + e.note : ''}</div></div>`;
+    execCEl.innerHTML += `<div class="contact-card"><div class="contact-name">${e.name}</div><div class="contact-title">${e.title}</div><div class="contact-location">📍 ${e.location} · Since ${e.since}${e.note ? ' · ' + e.note : ''}</div>${e.linkedInUrl ? `<a href="${e.linkedInUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:#0a66c2;font-weight:600;text-decoration:none;background:#f0f7ff;padding:4px 9px;border-radius:4px;border:1px solid #c7dff7;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> View on LinkedIn</a>` : ''}</div>`;
   });
   const buCEl = document.getElementById('bu-contacts');
   Object.values(d.segments).forEach(seg => {
@@ -1313,7 +1315,7 @@ function initDashboard() {
   });
   const funcCEl = document.getElementById('func-contacts');
   d.functionalLeaders.forEach(f => {
-    funcCEl.innerHTML += `<div class="contact-card" style="margin-bottom:0;"><div class="contact-name">${f.name}</div><div class="contact-title">${f.title}</div><div class="contact-location">📍 ${f.location} · ${f.bu}</div></div>`;
+    funcCEl.innerHTML += `<div class="contact-card" style="margin-bottom:0;"><div class="contact-name">${f.name}</div><div class="contact-title">${f.title}</div><div class="contact-location">📍 ${f.location} · ${f.unit}</div>${f.linkedInUrl ? `<a href="${f.linkedInUrl}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;color:#0a66c2;font-weight:600;text-decoration:none;background:#f0f7ff;padding:4px 9px;border-radius:4px;border:1px solid #c7dff7;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> View on LinkedIn</a>` : ''}</div>`;
   });
 
   // ── Spinoff section ──────────────────────────────────────────────────
@@ -1406,6 +1408,68 @@ function initDashboard() {
 
 document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
+
+<!-- ═══ FINANCIAL HEALTH ═══ -->
+<div id="financial" class="section">
+  <div class="section-title" style="font-size:16px;font-weight:700;margin-bottom:16px;">💹 Financial Health — Honeywell Aerospace Technologies</div>
+  <div style="background:linear-gradient(135deg,#0a2342,#d4001c);color:white;border-radius:10px;padding:15px 20px;margin-bottom:22px;">
+    <div style="font-size:13px;font-weight:700;margin-bottom:6px;">📊 8-Quarter Analysis — HON (NYSE)</div>
+    <div style="font-size:11.5px;opacity:.93;line-height:1.7;">Honeywell is spinning off its Aerospace Technologies division as a standalone public company in H2 2026. This organizational disruption creates a massive engineering services opportunity: the standalone entity will need to rebuild its IT/engineering infrastructure and reduce fixed-cost headcount. OEM mix pressure (more commercial, less aftermarket) has compressed margins.</div>
+  </div>
+
+  <div style="background:white;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:16px;">
+    <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#0a2342;">📈 Revenue, Margin &amp; R&amp;D Trend (Last 8 Quarters)</div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
+        <thead>
+          <tr style="background:#0a2342;color:white;">
+            <th style="padding:8px 12px;text-align:left;">Quarter</th>
+            <th style="padding:8px 12px;text-align:right;">Revenue</th>
+            <th style="padding:8px 12px;text-align:right;">Op. Margin</th>
+            <th style="padding:8px 12px;text-align:right;">R&amp;D Spend</th>
+            <th style="padding:8px 12px;text-align:left;">Key Signal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:white;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q1 2024</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$3.71B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">22.8%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$385M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">Strong aftermarket; Defense & Space growing; OEM mix starting to shift</td></tr>
+          <tr style="background:#f9fafb;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q2 2024</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$3.89B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">22.1%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$401M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">OEM revenue increasing vs. aftermarket; margin mix pressure beginning</td></tr>
+          <tr style="background:white;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q3 2024</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$3.95B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">21.4%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$412M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">780bps margin decline flagged vs. 2023; OEM mix accelerating headwind</td></tr>
+          <tr style="background:#f9fafb;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q4 2024</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$4.11B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">20.6%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$428M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">Standalone spin-off announced; Honeywell Forge Performance+ AI/ML platform launched</td></tr>
+          <tr style="background:white;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q1 2025</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$3.88B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">21.2%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$418M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">Spin preparation underway; IT/ERP separation planning begins</td></tr>
+          <tr style="background:#f9fafb;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q2 2025</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$4.02B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">21.8%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$425M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">Workforce rightsizing for standalone entity; engineering headcount review</td></tr>
+          <tr style="background:white;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q3 2025</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$4.19B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">22.3%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$432M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">Separation roadmap confirmed H2 2026; standalone governance structure established</td></tr>
+          <tr style="background:#f9fafb;"><td style="padding:7px 12px;border-bottom:1px solid #eee;">Q4 2025</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$4.38B</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">22.9%</td><td style="padding:7px 12px;text-align:right;border-bottom:1px solid #eee;">$441M</td><td style="padding:7px 12px;border-bottom:1px solid #eee;">FY2025 Aerospace +13.3% YoY; standalone prep accelerating; Forge platform gaining traction</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <div style="background:white;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#0a2342;">⚠️ Margin Pressures &amp; Stress Signals</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="padding:10px;background:#fff5f5;border-left:3px solid #c62828;border-radius:4px;"><div style="font-weight:700;color:#c62828;margin-bottom:4px;font-size:12px;">🔴 Standalone Spin-off (H2 2026) — Major Disruption</div><div style="color:#555;line-height:1.6;font-size:11.5px;">Separating from HON parent creates massive ERP, IT, engineering, and HR infrastructure gaps. Standalone entity will need external engineering delivery partners from day one.</div></div>
+        <div style="padding:10px;background:#fff8e1;border-left:3px solid #f57f17;border-radius:4px;"><div style="font-weight:700;color:#f57f17;margin-bottom:4px;font-size:12px;">🟡 OEM Mix Margin Compression (780bps)</div><div style="color:#555;line-height:1.6;font-size:11.5px;">More OEM revenue (lower margin) vs. aftermarket (higher margin). Aerospace segment margins declined ~780bps. Cost reduction in engineering operations is a C-suite priority.</div></div>
+        <div style="padding:10px;background:#fff8e1;border-left:3px solid #f57f17;border-radius:4px;"><div style="font-weight:700;color:#f57f17;margin-bottom:4px;font-size:12px;">🟡 Honeywell Forge Platform Rollout</div><div style="color:#555;line-height:1.6;font-size:11.5px;">AI/ML-powered MRO platform needs engineering implementation partners across airline customers. Digital engineering services opportunity.</div></div>
+        <div style="padding:10px;background:#e8f5e9;border-left:3px solid #2e7d32;border-radius:4px;"><div style="font-weight:700;color:#2e7d32;margin-bottom:4px;font-size:12px;">🟢 Defense & Space Growth</div><div style="color:#555;line-height:1.6;font-size:11.5px;">Defense & Space segment growing double-digit. Engineering services for avionics, flight management, propulsion control systems in demand.</div></div>
+      </div>
+    </div>
+    <div style="background:white;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#0a2342;">🎯 Cyient Opportunity Signals</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="padding:10px;background:#e8f0fe;border-left:3px solid #d4001c;border-radius:4px;"><div style="font-weight:700;color:#d4001c;margin-bottom:4px;font-size:12px;">💡 Post-Spin Engineering Outsourcing — $5–20M</div><div style="color:#555;line-height:1.6;font-size:11.5px;">Standalone entity separation creates infrastructure gap. Engineering documentation, systems engineering, quality systems from Cyient Hyderabad. Entry: Honeywell Aerospace CTO / VP Engineering.</div></div>
+        <div style="padding:10px;background:#e8f0fe;border-left:3px solid #d4001c;border-radius:4px;"><div style="font-weight:700;color:#d4001c;margin-bottom:4px;font-size:12px;">💡 Honeywell Forge Implementation Engineering</div><div style="color:#555;line-height:1.6;font-size:11.5px;">Forge Performance+ platform deployment at airline MRO customers. Digital engineering implementation services. Entry: VP Digital Products.</div></div>
+        <div style="padding:10px;background:#e8f0fe;border-left:3px solid #d4001c;border-radius:4px;"><div style="font-weight:700;color:#d4001c;margin-bottom:4px;font-size:12px;">💡 Avionics & Flight Management Systems Engineering</div><div style="color:#555;line-height:1.6;font-size:11.5px;">FMS, SATCOM, CNS/ATM systems engineering. DO-178C avionics verification, integration documentation. Sustained engagement across Defense & Space programs.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:12px 16px;background:#f0f4ff;border-radius:8px;font-size:11px;color:#555;line-height:1.6;">
+    <strong>Data sources:</strong> SEC 10-K/10-Q filings, company investor relations, MacroTrends, Yahoo Finance, Aviation Week, FlightGlobal, AIN Online. Last updated: April 2026.
+  </div>
+</div>
+<!-- END FINANCIAL SECTION -->
+
 </body>
 </html>
 
