@@ -1237,9 +1237,7 @@ function initDashboard() {
   document.getElementById('action-eps-sub').textContent = epsIU.subunits.join(' · ') + ' · Urbana OH';
   document.getElementById('action-cs-hdr').textContent  = '🛡️ ' + cs.name + ' (' + cs.short + ') — ' + cs.president + ' · $' + cs.revenue + 'B';
   document.getElementById('action-cs-sub').textContent  = csIU.subunits.join(' · ') + ' · Phoenix / Clearwater FL';
-}
 
-  // ── Outreach Playbook ────────────────────────────────────────────────
   const op = d.outreachPlaybook;
   document.getElementById('op-headline').textContent = op.headline;
   document.getElementById('op-badge').textContent    = op.badge;
@@ -1274,6 +1272,7 @@ function initDashboard() {
       <div style="font-size:12px;color:#666;margin-bottom:6px;">📍 ${e.location} &nbsp;·&nbsp; 📅 ${e.date} &nbsp;·&nbsp; <span class="tag">${e.type}</span></div>
       <p style="font-size:12.5px;line-height:1.7;color:#444;">${e.why}</p>
     </div>`).join('');
+}
 
 document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
